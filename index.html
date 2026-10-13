@@ -474,6 +474,39 @@ a:hover { color: var(--azul-profundo-escuro); }
 @media (min-width: 720px) { .rodape-grade { grid-template-columns: 1.2fr 1fr 1fr; } }
 @media (min-width: 1024px) { .rodape-base { grid-template-columns: 1fr auto; } }
 
+/* ============ Formulário de agendamento ============ */
+.form-agendar {
+  width: min(100% - 24px, 480px); max-height: calc(100svh - 24px); margin: auto;
+  padding: 0; border: 0; border-radius: 24px; background: var(--creme); color: var(--tinta);
+}
+.form-agendar::backdrop { background: rgba(30, 59, 69, 0.45); }
+.form-corpo { display: grid; gap: 14px; padding: 24px 20px 22px; }
+.form-topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.form-topo h2 { font-size: 1.9rem; }
+.form-fechar { width: 44px; height: 44px; flex: none; display: grid; place-content: center; background: none; border: 0; border-radius: 999px; cursor: pointer; color: var(--tinta); }
+.form-fechar span { display: block; width: 20px; height: 1.5px; background: currentColor; grid-area: 1 / 1; }
+.form-fechar span:first-child { transform: rotate(45deg); }
+.form-fechar span:last-child { transform: rotate(-45deg); }
+.form-intro { font-size: .9375rem; margin-top: -6px; }
+.campo { display: grid; gap: 6px; border: 0; margin: 0; padding: 0; }
+.campo > span, .campo legend { font-size: .9375rem; font-weight: 500; padding: 0; }
+.campo input, .campo select {
+  width: 100%; min-height: 48px; padding: 10px 14px;
+  font: 400 1rem/1.3 var(--fonte-texto); color: var(--tinta);
+  background: #fff; border: 1px solid rgba(46, 102, 120, 0.35); border-radius: 14px;
+}
+.campo input:focus-visible, .campo select:focus-visible { outline: 2px solid var(--azul-profundo); outline-offset: 1px; }
+.opcoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.opcoes label { position: relative; }
+.opcoes input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opcoes span { display: grid; place-items: center; min-height: 44px; border: 1px solid rgba(46, 102, 120, 0.35); border-radius: 999px; font-size: .9375rem; background: #fff; }
+.opcoes input:checked + span { background: var(--azul-profundo); border-color: var(--azul-profundo); color: var(--creme); }
+.opcoes input:focus-visible + span { outline: 2px solid var(--azul-profundo); outline-offset: 2px; }
+.aceite { display: flex; gap: 10px; align-items: flex-start; font-size: .9375rem; color: var(--tinta-suave); }
+.aceite input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--azul-profundo); }
+.form-erro { color: #9B2C2C; font-size: .9375rem; }
+.form-enviar { width: 100%; margin-top: 4px; }
+
 /* ============ WhatsApp flutuante ============ */
 .flutuante {
   position: fixed; z-index: 40;
@@ -566,7 +599,7 @@ a:hover { color: var(--azul-profundo-escuro); }
         <div class="hero-lado">
           <p class="hero-sub">A <span data-c="responsavel.nome">Dra. Paula Arieira</span> atende adultos e crianças em um só lugar, com todos os tratamentos odontológicos.</p>
           <div class="hero-acoes">
-            <a class="botao botao-principal" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
+            <a class="botao botao-principal" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
               <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Agendar pelo WhatsApp
             </a>
             <a class="botao botao-secundario" href="#tratamentos">Ver tratamentos</a>
@@ -629,7 +662,7 @@ a:hover { color: var(--azul-profundo-escuro); }
       <div class="protese-intro">
         <h2 id="titulo-protese">Do implante à coroa</h2>
         <p>Fazemos implantes e próteses fixas e removíveis. Na avaliação, a <span data-c="responsavel.curto">Dra. Paula</span> indica o caminho certo para cada caso.</p>
-        <a class="botao botao-secundario" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">Agendar uma avaliação</a>
+        <a class="botao botao-secundario" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">Agendar uma avaliação</a>
       </div>
       <div class="protese-trilho">
         <div class="protese-fixo">
@@ -703,7 +736,7 @@ a:hover { color: var(--azul-profundo-escuro); }
       </svg>
       <div class="sobre-texto">
         <p>Na <span data-c="clinica.nome">Arieira Odontologia Especializada</span>, a <span data-c="responsavel.curto">Dra. Paula</span> atende adultos e crianças, com todos os tratamentos odontológicos no mesmo consultório. Cada tratamento começa por uma avaliação, em que ela explica as opções para o seu caso com calma e clareza.</p>
-        <a class="botao botao-principal" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
+        <a class="botao botao-principal" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
           <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Agendar uma avaliação
         </a>
       </div>
@@ -779,75 +812,36 @@ a:hover { color: var(--azul-profundo-escuro); }
   <div class="marca-fundo" aria-hidden="true" data-c="clinica.nomeCurto">Arieira</div>
 </footer>
 
+<dialog class="form-agendar" id="form-agendar" aria-labelledby="titulo-form">
+  <form method="dialog" class="form-corpo" id="form-agendar-corpo" novalidate>
+    <div class="form-topo">
+      <h2 id="titulo-form">Agendar avaliação</h2>
+      <button type="button" class="form-fechar" data-fechar-form aria-label="Fechar"><span></span><span></span></button>
+    </div>
+    <p class="suave form-intro">Deixe seus dados e continue a conversa no WhatsApp. A clínica responde para confirmar o horário.</p>
+    <label class="campo"><span>Seu nome</span><input name="nome" autocomplete="name" required></label>
+    <label class="campo"><span>WhatsApp com DDD</span><input name="telefone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(22) 90000-0000" required></label>
+    <label class="campo"><span>Tratamento de interesse</span><select name="interesse" id="form-interesse"></select></label>
+    <fieldset class="campo">
+      <legend>Melhor período</legend>
+      <div class="opcoes">
+        <label><input type="radio" name="periodo" value="Manhã" checked><span>Manhã</span></label>
+        <label><input type="radio" name="periodo" value="Tarde"><span>Tarde</span></label>
+        <label><input type="radio" name="periodo" value="Tanto faz"><span>Tanto faz</span></label>
+      </div>
+    </fieldset>
+    <label class="aceite"><input type="checkbox" name="aceite" required><span>Aceito ser contatado pela clínica sobre o agendamento.</span></label>
+    <p class="form-erro" id="form-erro" role="alert" hidden></p>
+    <button class="botao botao-principal form-enviar" type="submit"><svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Continuar no WhatsApp</button>
+  </form>
+</dialog>
+
 <a class="flutuante" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener" aria-label="Agendar pelo WhatsApp">
   <svg aria-hidden="true"><use href="#i-whatsapp"/></svg>
 </a>
 
+<script src="config.js"></script>
 <script>
-/* =====================================================================
-   CONFIGURAÇÃO DO LEAD
-   Para trocar de clínica, edite só este bloco e as imagens da pasta img/.
-   ===================================================================== */
-
-// Deixe vazio enquanto não tiver o dado. Vazio: cidade e horário somem da
-// página, e o rodapé mostra "CRO-RJ 00000".
-const CIDADE = '';   // exemplo de formato: 'Nome da cidade, UF'
-const HORARIO = '';  // exemplo de formato: 'Segunda a sexta, das 8h às 18h'
-const CRO = '';      // exemplo de formato: 'CRO-RJ 12345'
-
-const CONFIG = {
-  clinica: {
-    nome: 'Arieira Odontologia Especializada',
-    nomeCurto: 'Arieira',              // usado no nome grande do rodapé
-    logo: 'img/logo.png',
-  },
-  responsavel: { nome: 'Dra. Paula Arieira', curto: 'Dra. Paula' },
-  endereco: 'Av. Joaquim Nogueira, 926',
-  telefone: { texto: '(22) 2040-9551', link: 'tel:+552220409551', internacional: '+55-22-2040-9551' },
-  whatsapp: {
-    texto: '(22) 99247-4474',
-    numero: '5522992474474',
-    mensagem: 'Olá! Vim pelo site e gostaria de agendar uma avaliação.',
-    internacional: '+55-22-99247-4474',
-  },
-  instagram: { usuario: '@arieira_odontologia_', link: 'https://instagram.com/arieira_odontologia_' },
-  // link vazio: abre a busca da clínica no Google Maps, onde aparecem as avaliações
-  google: { nota: '5,0', total: 24, link: '' },
-  cores: {
-    creme: '#FEFDF9',
-    azul: '#519CB1',
-    azulProfundo: '#2E6678',
-    azulProfundoEscuro: '#24525F',
-    tinta: '#1E3B45',
-    tintaSuave: '#4A6670',
-    nevoa: '#E9F2F5',
-    ouro: '#B8994F',
-    ouroDe: '#A98A47',
-    ouroAte: '#D4B670',
-    linha: 'rgba(81, 156, 177, 0.25)',
-  },
-  tratamentos: [
-    { nome: 'Canal', texto: 'Trata a parte interna do dente, a polpa, quando ela está inflamada ou infeccionada.' },
-    { nome: 'Clínico geral', texto: 'Consultas de rotina, limpeza e restaurações, com a avaliação que orienta os próximos passos.' },
-    { nome: 'Periodontia', texto: 'Cuida da gengiva e do osso que sustentam os dentes, como em casos de sangramento ou retração.' },
-    { nome: 'ATM', texto: 'Avaliação de dores, estalos e travamentos na articulação da mandíbula.' },
-    { nome: 'Implante', texto: 'Um pino de titânio colocado no osso para substituir a raiz de um dente perdido.' },
-    { nome: 'Ortodontia', texto: 'Aparelhos para alinhar os dentes e ajustar a mordida, em crianças e adultos.' },
-    { nome: 'Odontopediatria', texto: 'Cuidado com os dentes de bebês, crianças e adolescentes, em cada fase do crescimento.' },
-    { nome: 'Cirurgia de siso', texto: 'Avaliação e remoção dos dentes do siso, quando indicada.' },
-    { nome: 'Próteses fixas e removíveis', texto: 'Coroas, pontes e dentaduras para repor dentes perdidos ou muito desgastados.' },
-  ],
-  // Avaliações reais copiadas do Google (texto e primeiro nome). Vazio: a faixa de avaliações não aparece.
-  // Formato: { nome: 'Maria S.', texto: '...' }
-  avaliacoes: [],
-  // Cada foto já traz "Antes" em cima e "Depois" embaixo. Use as fotos inteiras.
-  resultados: [
-    { titulo: 'Lentes', legenda: 'Lentes de contato dental para ajustar a cor e o formato dos dentes.', imagem: 'img/lentes.jpg', alt: 'Antes e depois de lentes de contato dental: sorriso antes, em cima, e depois, embaixo.' },
-    { titulo: 'Clareamento dental', legenda: 'Clareamento feito com acompanhamento profissional.', imagem: 'img/clareamento.jpg', alt: 'Antes e depois de clareamento dental: sorriso antes, em cima, e depois, embaixo.' },
-    { titulo: 'Prótese', legenda: 'Prótese para repor os dentes que estavam ausentes.', imagem: 'img/protese.jpg', alt: 'Antes e depois de prótese dentária: sorriso antes, em cima, e depois, embaixo.' },
-  ],
-};
-
 /* =====================================================================
    A partir daqui não é preciso mexer para trocar de lead.
    ===================================================================== */
@@ -1001,6 +995,39 @@ const CONFIG = {
     const recuo = parseFloat(getComputedStyle(casos).scrollPaddingLeft || 0);
     casos.scrollTo({ left: cartoes[i].offsetLeft - recuo, behavior: reduzirMovimento.matches ? 'auto' : 'smooth' });
   }));
+
+  /* ---------- Formulário de agendamento ---------- */
+  // Na demonstração o contato fica salvo neste navegador e aparece no painel
+  // (painel/). Com CONFIG.crm.planilhaUrl preenchido, também vai para a planilha.
+  const dialogo = $('#form-agendar');
+  const form = $('#form-agendar-corpo');
+  const erroForm = $('#form-erro');
+  $('#form-interesse').innerHTML = ['Avaliação geral'].concat(CONFIG.tratamentos.map((t) => t.nome)).map((n) => '<option>' + esc(n) + '</option>').join('');
+  if (dialogo && typeof dialogo.showModal === 'function') {
+    $$('[data-abrir-form]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); erroForm.hidden = true; dialogo.showModal(); }));
+    $$('[data-fechar-form]').forEach((b) => b.addEventListener('click', () => dialogo.close()));
+    dialogo.addEventListener('click', (e) => { if (e.target === dialogo) dialogo.close(); });
+  }
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    const digitos = (d.telefone || '').replace(/\D/g, '');
+    let msg = '';
+    if (!d.nome || d.nome.trim().length < 2) msg = 'Escreva seu nome.';
+    else if (digitos.length < 10) msg = 'Escreva o WhatsApp com DDD, por exemplo (22) 90000-0000.';
+    else if (!d.aceite) msg = 'Marque a opção de aceite para continuar.';
+    if (msg) { erroForm.textContent = msg; erroForm.hidden = false; return; }
+    const contato = { id: 'site-' + Date.now(), nome: d.nome.trim(), telefone: d.telefone.trim(), interesse: d.interesse, periodo: d.periodo, criadoEm: new Date().toISOString(), etapa: 'novo', origem: 'Site' };
+    const chave = (CONFIG.crm && CONFIG.crm.chave ? CONFIG.crm.chave : 'clinica') + '-contatos-site';
+    try { const lista = JSON.parse(localStorage.getItem(chave) || '[]'); lista.push(contato); localStorage.setItem(chave, JSON.stringify(lista)); } catch (err) { /* navegador sem armazenamento: segue para o WhatsApp */ }
+    if (CONFIG.crm && CONFIG.crm.planilhaUrl) {
+      fetch(CONFIG.crm.planilhaUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ acao: 'salvar', tabela: 'contatos', registro: contato }) }).catch(() => {});
+    }
+    const texto = CONFIG.whatsapp.mensagem + ' Meu nome é ' + contato.nome + '. Interesse: ' + contato.interesse + '. Melhor período: ' + contato.periodo.toLowerCase() + '.';
+    window.open('https://wa.me/' + CONFIG.whatsapp.numero + '?text=' + encodeURIComponent(texto), '_blank', 'noopener');
+    form.reset();
+    dialogo.close();
+  });
 
   /* ---------- Menu do celular ---------- */
   const botaoMenu = $('.botao-menu');
