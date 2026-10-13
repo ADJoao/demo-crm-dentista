@@ -1,0 +1,258 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<style>html,body{margin:0;background:#E9F2F5}</style>
+</head><body>
+<script type="module">
+import * as THREE from 'three';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const P = Object.assign({ W: 1600, H: 2000, ss: 2 }, JSON.parse(decodeURIComponent(location.hash.slice(1) || '%7B%7D')));
+const W = P.W * P.ss, H = P.H * P.ss;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true, premultipliedAlpha: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = P.tm === "neutral" ? THREE.NeutralToneMapping : (P.tm === "agx" ? THREE.AgXToneMapping : THREE.ACESFilmicToneMapping);
+renderer.toneMappingExposure = P.exposure ?? 1.0;
+document.body.appendChild(renderer.domElement);
+
+/* ---------- ambiente de estúdio (só reflexos) ---------- */
+function studio() {
+  const s = new THREE.Scene();
+  const room = new THREE.Mesh(new THREE.SphereGeometry(60, 32, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.30, 0.34, 0.37), side: THREE.BackSide }));
+  s.add(room);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({ color: new THREE.Color(P.floor ?? 0.1, (P.floor ?? 0.1) * 1.08, (P.floor ?? 0.1) * 1.15) }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -22; s.add(floor);
+  const panel = (w, h, pos, look, k) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k * 1.02), side: THREE.DoubleSide }));
+    m.position.set(...pos); m.lookAt(...look); s.add(m);
+  };
+  panel(34, 34, [0, 30, 0], [0, 0, 0], P.top ?? 5);          // softbox de cima
+  panel(7, 46, [-28, 4, 6], [0, 0, 0], P.left ?? 9);          // faixa vertical esquerda
+  panel(4, 46, [27, 4, 4], [0, 0, 0], P.right ?? 6);          // faixa vertical direita
+  panel(18, 14, [-14, 10, 30], [0, 0, 0], P.key ?? 3.2);      // key frontal
+  panel(40, 8, [0, 6, -32], [0, 0, 0], P.rim ?? 3);           // recorte de fundo
+  panel(30, 6, [6, -14, 30], [0, 0, 0], P.low ?? 1.2);        // rebatedor baixo
+  return s;
+}
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(studio(), 0.02).texture;
+const key = new THREE.DirectionalLight(0xffffff, P.dir ?? 1.4); key.position.set(-6, 14, 12); scene.add(key);
+const fill = new THREE.HemisphereLight(0xf4f8fa, 0x8090a0, P.hemi ?? 0.35); scene.add(fill);
+
+/* ---------- utilidades ---------- */
+const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+const lerp = (a, b, t) => a + (b - a) * t;
+function gridGeometry(nu, nv, fn) { // u envolve (theta), v de 0 a 1
+  const pos = [], idx = [];
+  for (let j = 0; j <= nv; j++) for (let i = 0; i < nu; i++) { const p = fn(i / nu, j / nv); pos.push(p[0], p[1], p[2]); }
+  for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) {
+    const a = j * nu + i, b = j * nu + (i + 1) % nu, c = (j + 1) * nu + i, d = (j + 1) * nu + (i + 1) % nu;
+    idx.push(a, c, b, b, c, d);
+  }
+  let g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx);
+  g = mergeVertices(g, 1e-4);
+  g.computeVertexNormals();
+  return g;
+}
+
+/* ---------- coroa (molar) ---------- */
+function crownGeometry(o = {}) {
+  const A = o.A ?? 5.0, B = o.B ?? 4.6, C = o.C ?? 3.5, e1 = o.e1 ?? (P.e1 ?? 0.34), e2 = o.e2 ?? 0.6;
+  const amp = o.amp ?? (P.amp ?? 0.95), neck = o.neck ?? (P.neck ?? 0.56);
+  const cusps = o.cusps ?? [[-0.45, 0.42, 1.0], [0.45, 0.42, 0.92], [-0.45, -0.42, 1.06], [0.45, -0.42, 0.86], [0.1, 0.62, 0.35]];
+  const sg = (x, m) => Math.sign(x) * Math.pow(Math.abs(x), m);
+  const field = (u, v) => {
+    let f = 0;
+    for (const [cu, cv, h] of cusps) f += h * Math.exp(-((u - cu) ** 2 + (v - cv) ** 2) / (2 * (P.sig ?? 0.23) ** 2));
+    f -= 0.55 * Math.exp(-(u * u + v * v) / (2 * 0.2 ** 2));
+    f -= 0.32 * Math.exp(-(v * v) / (2 * 0.06 ** 2)) * (1 - smooth(0.55, 0.95, Math.abs(u)));
+    f -= 0.16 * Math.exp(-(u * u) / (2 * 0.06 ** 2)) * (1 - smooth(0.5, 0.95, Math.abs(v)));
+    return f;
+  };
+  const g = gridGeometry(220, 260, (s, t) => {
+    const th = s * Math.PI * 2, ph = -Math.PI / 2 + t * Math.PI;
+    let x = A * sg(Math.cos(ph), e1) * sg(Math.cos(th), e2);
+    let z = B * sg(Math.cos(ph), e1) * sg(Math.sin(th), e2);
+    let y = C * sg(Math.sin(ph), e1);
+    const yn = y / C; // -1..1
+    // pescoço cervical: estreita para baixo
+    const k = lerp(1, neck, smooth(P.neckA ?? -0.15, -1.0, yn) ** (P.neckP ?? 1.1));
+    // bojo levemente acima do meio
+    const bulge = 1 + 0.035 * Math.exp(-((yn - 0.15) ** 2) / 0.18);
+    x *= k * bulge; z *= k * bulge;
+    const u = x / A, v = z / B;
+    // sulcos vestibular e lingual descendo pela face
+    const gw = smooth(-0.1, 0.8, yn) * 0.035 * Math.exp(-(u * u) / (2 * 0.09 ** 2));
+    z *= 1 - gw;
+    // cúspides no topo
+    const wTop = smooth(0.35, 0.98, yn);
+    y += wTop * amp * (field(u, v) - 0.55);
+    return [x, y, z];
+  });
+  g.computeBoundingBox();
+  const pa = g.attributes.position, col = [], c0 = new THREE.Color(o.neckColor ?? '#c9d6dc'), c1 = new THREE.Color('#ffffff'), tmp = new THREE.Color();
+  const y0 = g.boundingBox.min.y, y1 = g.boundingBox.max.y;
+  for (let i = 0; i < pa.count; i++) { const t = (pa.getY(i) - y0) / (y1 - y0); tmp.copy(c0).lerp(c1, smooth(0.0, 0.55, t)); col.push(tmp.r, tmp.g, tmp.b); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  return g;
+}
+
+/* ---------- implante ---------- */
+function implantGeometry() {
+  const L = 10.8, pitch = 0.82, depth = 0.34;
+  const g = gridGeometry(180, 900, (s, t) => {
+    const th = s * Math.PI * 2;
+    const y = t * L;
+    let c = 1.05 + 0.73 * smooth(0.0, 3.6, y) ** 0.8;
+    if (y < 0.45) c *= Math.sqrt(Math.max(0, 1 - ((0.45 - y) / 0.45) ** 2));
+    const env = smooth(0.25, 1.1, y) * (1 - smooth(L - 1.75, L - 1.45, y));
+    const f = ((y / pitch - th / (Math.PI * 2)) % 1 + 1) % 1;
+    const ridge = Math.pow(Math.max(0, 1 - Math.abs(2 * f - 1)), 1.6);
+    let r = c + depth * env * ridge;
+    // colar usinado
+    const collar = smooth(L - 1.5, L - 1.35, y);
+    r = lerp(r, 1.97 - 0.2 * smooth(L - 0.18, L, y), collar);
+    if (t === 1) r = 0;
+    return [r * Math.cos(th), y, -r * Math.sin(th)];
+  });
+  // hexágono interno no topo
+  const hex = new THREE.Shape(); for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3; hex[i ? 'lineTo' : 'moveTo'](0.82 * Math.cos(a), 0.82 * Math.sin(a)); }
+  const hexG = new THREE.ShapeGeometry(hex); hexG.rotateX(-Math.PI / 2); hexG.translate(0, L + 0.003, 0);
+  return { body: g, hex: hexG, L };
+}
+
+/* ---------- pilar ---------- */
+function abutmentGeometry() {
+  const pts = [[0, 0], [1.66, 0], [1.72, 0.06], [1.86, 0.6], [2.1, 1.3], [2.36, 1.95], [2.46, 2.2], [2.44, 2.32], [2.3, 2.42], [1.98, 2.48], [1.86, 2.56], [1.8, 3.4], [1.68, 5.6], [1.56, 6.6], [1.44, 6.95], [1.2, 7.12], [0.86, 7.17], [0.66, 7.12], [0.6, 6.9], [0.6, 6.5], [0, 6.5]];
+  // suaviza a curva do perfil
+  const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], 0)), false, 'centripetal', 0.2);
+  const prof = curve.getPoints(260).map(p => new THREE.Vector2(Math.max(0, p.x), p.y));
+  const g = new THREE.LatheGeometry(prof, 200);
+  g.computeVertexNormals();
+  return g;
+}
+
+/* ---------- raízes dos vizinhos ---------- */
+function rootGeometry(top, bottom, r0, r1) {
+  const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(...top), new THREE.Vector3(top[0] * 0.5 + bottom[0] * 0.5 + (bottom[0] - top[0]) * 0.3, (top[1] + bottom[1]) / 2, top[2]), new THREE.Vector3(...bottom));
+  const g = new THREE.TubeGeometry(curve, 80, 1, 48, false);
+  // afina o tubo ao longo do comprimento
+  const p = g.attributes.position, n = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++) {
+    const seg = Math.floor(i / 49), t = seg / 80;
+    curve.getPointAt(t, c);
+    n.set(p.getX(i), p.getY(i), p.getZ(i)).sub(c);
+    const r = lerp(r0, r1, Math.pow(t, 1.3)) * (t > 0.92 ? Math.sqrt(Math.max(0.02, 1 - ((t - 0.92) / 0.08) ** 2)) : 1);
+    n.multiplyScalar(r);
+    p.setXYZ(i, c.x + n.x, c.y + n.y, c.z + n.z);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+/* ---------- osso + gengiva (bloco em corte) ---------- */
+const GUM = (x) => 0.85 - 0.85 * Math.cos(2 * Math.PI * x / 10.4) - 0.9;
+function slabGeometry() {
+  const s = new THREE.Shape();
+  const X = 24, Y0 = -21;
+  s.moveTo(-X, Y0); s.lineTo(X, Y0);
+  for (let i = 0; i <= 240; i++) { const x = X - (2 * X * i) / 240; s.lineTo(x, GUM(x)); }
+  s.lineTo(-X, Y0);
+  const bt = 0.8;
+  const g = new THREE.ExtrudeGeometry(s, { depth: 5.0, bevelEnabled: true, bevelThickness: bt, bevelSize: 0.75, bevelSegments: 10, curveSegments: 64, steps: 1 });
+  g.translate(0, 0, -(5.0 + bt) + (P.faceZ ?? 0));
+  g.computeVertexNormals();
+  return g;
+}
+function slabMaterial(bone, gum) {
+  const m = new THREE.MeshPhysicalMaterial({ toneMapped: !P.slabRaw, color: bone, roughness: P.slabRough ?? 0.55, metalness: 0, clearcoat: P.slabCoat ?? 0.35, clearcoatRoughness: 0.4, transparent: true, depthWrite: true });
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uGum = { value: gum };
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;').replace('#include <project_vertex>', '#include <project_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;\nuniform vec3 uGum;').replace('vec4 diffuseColor = vec4( diffuse, opacity );', `float gl = 0.85 - 0.85 * cos(6.2831853 * vWP.x / 10.4) - 0.9;
+      float gm = smoothstep(gl - ${(P.gumT ?? 2.6).toFixed(2)} - 0.35, gl - ${(P.gumT ?? 2.6).toFixed(2)} + 0.35, vWP.y);
+      float fade = smoothstep(${(P.fadeB ?? -17).toFixed(2)}, ${(P.fadeA ?? -12.8).toFixed(2)}, vWP.y);
+      vec4 diffuseColor = vec4( mix(diffuse, uGum, gm), opacity * fade );`);
+  };
+  return m;
+}
+function socketGeometry() { // alvéolo preparado: silhueta do implante no corte
+  const pts = [[2.55, GUM(0) + 0.05], [2.25, -1.4], [2.06, -2.3], [2.02, -3.8], [1.9, -6.5], [1.6, -10.2], [1.3, -12.3], [0.9, -13.05], [0, -13.3]];
+  const s = new THREE.Shape();
+  s.moveTo(-pts[0][0], pts[0][1]);
+  const left = pts.map(p => new THREE.Vector2(-p[0], p[1]));
+  const right = pts.slice().reverse().map(p => new THREE.Vector2(p[0], p[1]));
+  s.splineThru([...left.slice(1), ...right.slice(1)]);
+  s.lineTo(-pts[0][0], pts[0][1]);
+  const g = new THREE.ShapeGeometry(s, 64);
+  g.translate(0, 0, (P.faceZ ?? 0) + 0.02);
+  return g;
+}
+
+/* ---------- materiais ---------- */
+const porcelain = new THREE.MeshPhysicalMaterial({ vertexColors: true, color: new THREE.Color(P.crownColor ?? '#f3f5f6'), roughness: P.crownRough ?? 0.26, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.12, sheen: 0.4, sheenColor: new THREE.Color('#dfeef3'), sheenRoughness: 0.5, ior: 1.5, specularIntensity: 0.7 });
+const enamel = new THREE.MeshPhysicalMaterial({ vertexColors: true, color: new THREE.Color(P.toothColor ?? '#efebe2'), roughness: 0.32, metalness: 0, clearcoat: 0.8, clearcoatRoughness: 0.2, sheen: 0.3, sheenColor: new THREE.Color('#eef3f4'), specularIntensity: 0.6 });
+const rootMat = new THREE.MeshPhysicalMaterial({ color: new THREE.Color('#e6dccb'), roughness: 0.55, metalness: 0, clearcoat: 0.2 });
+const titanium = new THREE.MeshStandardMaterial({ color: new THREE.Color(P.tiColor ?? '#9ca6ac'), metalness: 1, roughness: P.tiRough ?? 0.27, envMapIntensity: 1.0 });
+const hexMat = new THREE.MeshStandardMaterial({ color: '#2b3236', metalness: 0.6, roughness: 0.5 });
+const chrome = new THREE.MeshStandardMaterial({ color: new THREE.Color(P.abColor ?? '#d3dadd'), metalness: 1, roughness: P.abRough ?? 0.1 });
+
+/* ---------- montagem final (posições montadas) ---------- */
+const IMPLANT_TOP = -2.2;
+const groups = {};
+function group(name) { const g = new THREE.Group(); g.name = name; scene.add(g); groups[name] = g; return g; }
+
+const gImpl = group('implante');
+const im = implantGeometry();
+const implantMesh = new THREE.Mesh(im.body, titanium); implantMesh.position.y = IMPLANT_TOP - im.L; gImpl.add(implantMesh);
+const hexMesh = new THREE.Mesh(im.hex, hexMat); hexMesh.position.y = IMPLANT_TOP - im.L; gImpl.add(hexMesh);
+
+const gAb = group('pilar');
+const ab = new THREE.Mesh(abutmentGeometry(), chrome); ab.position.y = IMPLANT_TOP; gAb.add(ab);
+
+const crownY = IMPLANT_TOP + 2.42 - 0.02;
+const gCrown = group('coroa');
+const cg = crownGeometry(); cg.computeBoundingBox();
+const crown = new THREE.Mesh(cg, porcelain); crown.position.y = crownY - cg.boundingBox.min.y; gCrown.add(crown);
+
+const gBase = group('base');
+for (const sx of [-1, 1]) {
+  const ng = crownGeometry({ neckColor: P.nNeck ?? '#dfe4e2', cusps: [[-0.45, 0.42, 0.95], [0.45, 0.42, 1.0], [-0.45, -0.42, 0.9], [0.45, -0.42, 1.02], [-0.1, 0.62, 0.3]], amp: 1.25 });
+  ng.computeBoundingBox();
+  const n = new THREE.Mesh(ng, enamel); n.position.set(sx * 10.4, -0.25 - ng.boundingBox.min.y, 0); n.scale.x = sx; gBase.add(n);
+  for (const rx of [-1, 1]) {
+    const rg = rootGeometry([sx * 10.4 + rx * 1.35, 0.6, 0], [sx * 10.4 + rx * 2.6, -12.2, 0], 1.55, 0.35);
+    gBase.add(new THREE.Mesh(rg, rootMat));
+  }
+}
+const slab = new THREE.Mesh(slabGeometry(), slabMaterial(new THREE.Color(P.bone ?? '#c4dbe4'), new THREE.Color(P.gum ?? '#dbe9ef'))); gBase.add(slab);
+const socketMat = slabMaterial(new THREE.Color(P.socket ?? '#aac4cf'), new THREE.Color(P.socketGum ?? '#bcd3dc'));
+const socket = new THREE.Mesh(socketGeometry(), socketMat); gBase.add(socket);
+
+/* ---------- câmera ---------- */
+const FRAME_H = 30, TARGET = new THREE.Vector3(0, -2, 0), FOV = 20, ELEV = (P.elev ?? 12) * Math.PI / 180;
+const camera = new THREE.PerspectiveCamera(FOV, W / H, 1, 400);
+const dist = (FRAME_H / 2) / Math.tan((FOV / 2) * Math.PI / 180);
+camera.position.set(0, TARGET.y + dist * Math.sin(ELEV), dist * Math.cos(ELEV));
+camera.lookAt(TARGET);
+
+/* ---------- passes ---------- */
+const out = {};
+const only = (name) => { for (const k in groups) groups[k].visible = (k === name || (name === 'all' && k !== 'none')); };
+for (const name of (P.layers ?? ['base', 'implante', 'pilar', 'coroa'])) {
+  only(name);
+  renderer.render(scene, camera);
+  out[name] = renderer.domElement.toDataURL('image/png');
+}
+// projeção de pontos de referência (para posicionar no HTML)
+const proj = (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(camera); return [(v.x + 1) / 2, (1 - v.y) / 2]; };
+window.__meta = { gumCenter: proj(0, 0, 0), implantTop: proj(0, IMPLANT_TOP, 0), crownTop: proj(0, crownY + 8, 0), unitsPerFrameH: FRAME_H };
+window.__out = out;
+window.__done = true;
+</script></body></html>

@@ -1,0 +1,24 @@
+import { chromium } from 'playwright';
+import fs from 'fs';
+import http from 'http';
+import path from 'path';
+const root = process.cwd();
+const srv = http.createServer((req, res) => {
+  const f = path.join(root, decodeURIComponent(req.url.split('?')[0].split('#')[0]));
+  fs.readFile(f, (e, d) => { if (e) { res.writeHead(404); res.end(); return; } res.writeHead(200, { 'Content-Type': f.endsWith('.js') ? 'text/javascript' : 'text/html' }); res.end(d); });
+}).listen(8765);
+const params = process.argv[2] || '{}';
+const outDir = process.argv[3] || 'out';
+fs.mkdirSync(outDir, { recursive: true });
+const b = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const p = await b.newPage();
+p.on('console', m => console.log('console:', m.text()));
+p.on('pageerror', e => console.log('pageerror:', e.message));
+await p.goto('http://localhost:8765/render.html#' + encodeURIComponent(params));
+await p.waitForFunction(() => window.__done, null, { timeout: 600000 });
+const out = await p.evaluate(() => window.__out);
+const meta = await p.evaluate(() => window.__meta);
+for (const [k, v] of Object.entries(out)) fs.writeFileSync(path.join(outDir, k + '.png'), Buffer.from(v.split(',')[1], 'base64'));
+fs.writeFileSync(path.join(outDir, 'meta.json'), JSON.stringify(meta, null, 1));
+console.log(JSON.stringify(meta));
+await b.close(); srv.close();
