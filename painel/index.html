@@ -268,8 +268,9 @@ a { color: var(--azul-profundo); }
   .folha-alca { display: none; }
 }
 
-.aviso { position: fixed; left: 50%; bottom: calc(var(--nav-h) + 86px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: var(--tinta); color: var(--creme); padding: 12px 18px; border-radius: 999px; font-size: .9375rem; max-width: calc(100% - 32px); }
+.aviso { display: flex; align-items: center; gap: 14px; position: fixed; left: 50%; bottom: calc(var(--nav-h) + 86px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: var(--tinta); color: var(--creme); padding: 12px 18px; border-radius: 999px; font-size: .9375rem; max-width: calc(100% - 32px); }
 @media (min-width: 1024px) { .aviso { bottom: 28px; } }
+.aviso-desfazer { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--creme); background: transparent; color: var(--creme); font-weight: 600; cursor: pointer; }
 
 /* ============ Assistente ============ */
 .chat { display: grid; gap: 12px; }
@@ -1002,7 +1003,10 @@ a { color: var(--azul-profundo); }
         tipo.addEventListener('change', trocar); texto.addEventListener('input', atualizarLink); trocar();
         raiz.addEventListener('click', function h(e) {
           const t = e.target.closest('button'); if (!t) return;
-          if (t.dataset.status) { c.status = t.dataset.status; gravar('consultas', c); avisar('Consulta marcada como ' + rotuloStatus[c.status].toLowerCase() + '.'); raiz.removeEventListener('click', h); detalheConsulta(c.id); desenhar(); }
+          if (t.dataset.status) {
+            const anterior = c.status; c.status = t.dataset.status; gravar('consultas', c); raiz.removeEventListener('click', h); detalheConsulta(c.id); desenhar();
+            avisar('Consulta marcada como ' + rotuloStatus[c.status].toLowerCase() + '.', () => { c.status = anterior; gravar('consultas', c); desenhar(); montarNav(); avisar('Alteração desfeita.'); });
+          }
           else if ('concluir' in t.dataset || 'receber' in t.dataset) { raiz.removeEventListener('click', h); formPagamento(c); }
           else if ('remarcar' in t.dataset) { raiz.removeEventListener('click', h); if (c.status === 'faltou' || c.status === 'cancelada') formConsulta({ pacienteId: c.pacienteId }); else formConsulta({ consulta: c }); }
         });
@@ -1093,8 +1097,13 @@ a { color: var(--azul-profundo); }
   }
 
   /* =================== Avisos e erros =================== */
-  let tAviso;
-  function avisar(t) { const a = $('#aviso'); a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, 2800); }
+  let tAviso, aoDesfazer = null;
+  function avisar(t, desfazer) {
+    const a = $('#aviso'); a.textContent = t; a.hidden = false; aoDesfazer = desfazer || null;
+    if (desfazer) { const b = doc.createElement('button'); b.type = 'button'; b.className = 'aviso-desfazer'; b.dataset.desfazer = ''; b.textContent = 'Desfazer'; a.appendChild(b); }
+    clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; aoDesfazer = null; }, desfazer ? 12000 : 2800);
+  }
+  const copiar = (o) => JSON.parse(JSON.stringify(o));
   function erro(t) { const e = $('#f-erro'); if (e) { e.textContent = t; e.hidden = false; } return false; }
 
   /* =================== Cliques =================== */
@@ -1110,7 +1119,16 @@ a { color: var(--azul-profundo); }
     else if (d.paciente) detalhePaciente(d.paciente);
     else if (d.verPaciente) detalhePaciente(d.verPaciente);
     else if (d.editarPac) formPaciente(db.pacientes.find((p) => p.id === d.editarPac));
-    else if (d.excluirPac) { if (confirm('Excluir este paciente e as consultas dele?')) { db.consultas.filter((c) => c.pacienteId === d.excluirPac).forEach((c) => apagar('consultas', c.id)); apagar('pacientes', d.excluirPac); fecharFolha(); desenhar(); avisar('Paciente excluído.'); } }
+    else if (d.excluirPac) {
+      const pac = paciente(d.excluirPac), cons = db.consultas.filter((c) => c.pacienteId === d.excluirPac);
+      if (confirm('Excluir ' + pac.nome + ' e as ' + cons.length + ' consultas dele(a)? Você poderá desfazer logo em seguida.')) {
+        const antes = copiar(db);
+        cons.forEach((c) => apagar('consultas', c.id)); apagar('pacientes', d.excluirPac);
+        fecharFolha(); montarNav(); desenhar();
+        avisar('Paciente excluído.', () => { db = antes; salvarLocal(); antes.pacientes.filter((p) => p.id === d.excluirPac).forEach((p) => sincronizar('pacientes', p)); cons.forEach((c) => sincronizar('consultas', c)); montarNav(); desenhar(); avisar('Paciente restaurado.'); });
+      }
+    }
+    else if ('desfazer' in d) { const f = aoDesfazer; aoDesfazer = null; $('#aviso').hidden = true; if (f) f(); }
     else if (d.contato) detalheContato(d.contato);
     else if (d.livre) formConsulta({ data: estado.dia, hora: d.livre });
     else if (d.dia) { estado.dia = iso(somaDias(deISO(estado.dia), Number(d.dia))); desenhar(); }
@@ -1123,7 +1141,13 @@ a { color: var(--azul-profundo); }
     else if (d.perguntar) perguntar(d.perguntar);
     else if ('baixar' in d) baixarPlanilha();
     else if ('opcoes' in d) abrirFolha('Opções', '<div class="acoes"><button class="botao botao-secundario" data-baixar>Baixar planilha</button><a class="botao botao-secundario" href="#contatos" data-fechar>Contatos do site</a><a class="botao botao-secundario" href="../" target="_blank">Abrir o site</a><button class="botao botao-secundario" data-restaurar>Restaurar dados de exemplo</button><button class="botao" data-sair>Sair</button></div><p class="pequeno suave">Demonstração: os dados são fictícios e ficam salvos só neste navegador.</p>');
-    else if ('restaurar' in d) { if (confirm('Apagar as alterações e voltar aos dados de exemplo?')) { db = gerarExemplo(); salvarLocal(); estado.chat = []; fecharFolha(); montarNav(); desenhar(); avisar('Dados de exemplo restaurados.'); } }
+    else if ('restaurar' in d) {
+      if (confirm('Apagar as alterações e voltar aos dados de exemplo? Você poderá desfazer logo em seguida.')) {
+        const antes = copiar(db), chatAntes = estado.chat;
+        db = gerarExemplo(); salvarLocal(); estado.chat = []; fecharFolha(); montarNav(); desenhar();
+        avisar('Dados de exemplo restaurados.', () => { db = antes; salvarLocal(); estado.chat = chatAntes; montarNav(); desenhar(); avisar('Seus dados voltaram.'); });
+      }
+    }
     else if ('sair' in d) { sessionStorage.removeItem(CHAVE_SESSAO); location.reload(); }
   });
 

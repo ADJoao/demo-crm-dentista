@@ -12,7 +12,7 @@ Abra `/painel/` no mesmo endereço do site. Senha de demonstração: `1234` (em 
 - **Contatos do site**: pedidos feitos pelo formulário "Agendar avaliação" do site.
 - **Financeiro**: recebido, a receber, ticket médio, por tratamento e por forma de pagamento, e "Baixar planilha".
 - **Assistente**: responde a mais de 20 perguntas prontas sobre os dados (sem IA externa).
-- Botão **Novo**: nova consulta ou novo paciente. **Restaurar dados de exemplo** fica no menu.
+- Botão **Novo**: nova consulta ou novo paciente. Excluir paciente, restaurar os exemplos e cancelar ou marcar falta têm botão **Desfazer** por 12 segundos. **Restaurar dados de exemplo** fica no menu.
 
 Na demonstração os dados são fictícios e ficam só no navegador. O contato enviado pelo site aparece no painel do mesmo aparelho.
 Para usar de verdade com Google Planilhas, siga as instruções de `painel/apps-script.gs` e cole a URL em `CONFIG.crm.planilhaUrl`.
