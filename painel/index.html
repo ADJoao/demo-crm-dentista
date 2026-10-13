@@ -161,7 +161,9 @@ a { color: var(--azul-profundo); }
   background: var(--branco); border: 1px solid var(--linha); border-radius: 16px; padding: 12px 14px; min-height: 64px;
 }
 .item:hover { border-color: var(--azul); }
-.item-hora { font: 500 1rem/1 var(--fonte-titulo); color: var(--azul-profundo); min-width: 46px; }
+.item-hora { font: 500 1rem/1.15 var(--fonte-titulo); color: var(--azul-profundo); min-width: 52px; }
+.item-hora small { display: block; font: 400 .75rem/1.2 var(--fonte-texto); color: var(--tinta-suave); margin-top: 2px; }
+.almoco { display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 0 14px; font-size: .875rem; color: var(--tinta-suave); border-top: 1px solid var(--linha); border-bottom: 1px solid var(--linha); }
 .item-titulo { font-weight: 600; display: block; }
 .item-sub { font-size: .875rem; color: var(--tinta-suave); display: block; }
 .avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--nevoa); color: var(--azul-profundo); font: 500 .95rem/1 var(--fonte-titulo); }
@@ -243,6 +245,8 @@ a { color: var(--azul-profundo); }
 .fechar span:first-child { transform: rotate(45deg); }
 .fechar span:last-child { transform: rotate(-45deg); }
 .acoes { display: grid; gap: 8px; }
+.msg-bloco { display: grid; gap: 8px; background: var(--nevoa); border-radius: 16px; padding: 12px; }
+.msg-bloco textarea { min-height: 120px; font-size: .9375rem; }
 .acoes-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .horarios { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .horarios button { min-height: 44px; border-radius: 12px; border: 1px solid var(--linha-forte); background: var(--branco); cursor: pointer; font-weight: 500; }
@@ -562,7 +566,8 @@ a { color: var(--azul-profundo); }
 
   function itemConsulta(c, mostrarData) {
     const p = paciente(c.pacienteId);
-    return '<li><button class="item" type="button" data-consulta="' + c.id + '"><span class="item-hora">' + (mostrarData ? dataCurta(c.data) + '<br>' : '') + c.hora + '</span><span><span class="item-titulo">' + esc(p.nome) + '</span><span class="item-sub">' + esc(c.procedimento) + '</span></span>' + etiquetaStatus(c) + '</button></li>';
+    const fim = hora(minutos(c.hora) + (c.duracao || 30));
+    return '<li><button class="item" type="button" data-consulta="' + c.id + '"><span class="item-hora">' + (mostrarData ? dataCurta(c.data) + '<br>' : '') + c.hora + '<small>até ' + fim + '</small></span><span><span class="item-titulo">' + esc(p.nome) + '</span><span class="item-sub">' + esc(c.procedimento) + '</span></span>' + etiquetaStatus(c) + '</button></li>';
   }
 
   RENDER.inicio = function () {
@@ -616,6 +621,7 @@ a { color: var(--azul-profundo); }
     const linhas = [];
     lista.forEach((c) => linhas.push({ h: c.hora, html: itemConsulta(c) }));
     if (dia >= HOJE()) livres.forEach((h) => { if (!(dia === HOJE() && minutos(h) < new Date().getHours() * 60 + new Date().getMinutes())) linhas.push({ h, html: '<li><button class="livre" type="button" data-livre="' + h + '"><span class="item-hora">' + h + '</span>Horário livre. Toque para agendar</button></li>' }); });
+    if (!fechado && C.agenda.almoco && C.agenda.almoco.length) linhas.push({ h: C.agenda.almoco[0], html: '<li class="almoco"><span class="item-hora" style="color:inherit">' + C.agenda.almoco[0] + '</span>Intervalo de almoço até ' + C.agenda.almoco[1] + '</li>' });
     linhas.sort((a, b) => a.h.localeCompare(b.h));
     el().innerHTML =
       '<div class="dia-nav"><h2>' + (dia === HOJE() ? 'Hoje, ' : '') + dataLonga(dia) + '</h2>' +
@@ -952,6 +958,20 @@ a { color: var(--azul-profundo); }
       });
   }
 
+  const ROTULO_MSG = { lembrete: 'Lembrete da consulta', confirmada: 'Consulta confirmada', concluida: 'Agradecimento após o atendimento', pagamento: 'Lembrete de pagamento', faltou: 'Faltou: oferecer novo horário', cancelada: 'Consulta cancelada' };
+  function textoMensagem(chave, c) {
+    const p = paciente(c.pacienteId);
+    const quando = c.data === HOJE() ? 'hoje' : c.data === iso(somaDias(new Date(), 1)) ? 'amanhã' : 'na ' + DIAS[deISO(c.data).getDay()] + ', dia ' + dataCurta(c.data);
+    const vars = { nome: primeiroNome(p.nome), clinica: CONFIG.clinica.nome, profissional: C.profissional, tratamento: c.procedimento.toLowerCase(), data: dataCurta(c.data), quando, hora: c.hora, valor: moeda(c.valor) };
+    return (C.mensagens[chave] || '').replace(/\{(\w+)\}/g, (m, k) => vars[k] != null ? vars[k] : m);
+  }
+  function mensagemPadrao(c) {
+    if (c.status === 'agendada') return 'lembrete';
+    if (c.status === 'confirmada') return 'confirmada';
+    if (c.status === 'concluida') return c.pagamento === 'pendente' ? 'pagamento' : 'concluida';
+    return c.status;
+  }
+
   function detalheConsulta(id) {
     const c = db.consultas.find((x) => x.id === id); if (!c) return;
     const p = paciente(c.pacienteId);
@@ -966,7 +986,9 @@ a { color: var(--azul-profundo); }
         '<div><dt>WhatsApp</dt><dd>' + esc(p.telefone) + '</dd></div>' + (c.obs ? '<div><dt>Observações</dt><dd>' + esc(c.obs) + '</dd></div>' : '') +
       '</dl>' +
       '<div class="acoes">' +
-        (aberta ? '<a class="botao botao-secundario" target="_blank" rel="noopener" href="' + linkWhats(p.telefone, lembrete) + '"><svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Enviar lembrete no WhatsApp</a>' : '') +
+        '<div class="msg-bloco"><label class="campo"><span>Mensagem para ' + esc(primeiroNome(p.nome)) + '</span><select id="msg-tipo">' + Object.keys(ROTULO_MSG).map((k) => '<option value="' + k + '"' + (k === mensagemPadrao(c) ? ' selected' : '') + '>' + ROTULO_MSG[k] + '</option>').join('') + '</select></label>' +
+          '<label class="campo"><span class="sr">Texto da mensagem</span><textarea id="msg-texto" rows="5"></textarea></label>' +
+          '<a class="botao botao-secundario" id="msg-enviar" target="_blank" rel="noopener"><svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Enviar no WhatsApp</a></div>' +
         (c.status === 'agendada' ? '<button class="botao botao-secundario" data-status="confirmada">Paciente confirmou</button>' : '') +
         (aberta ? '<button class="botao botao-principal" data-concluir>Atendimento concluído</button><div class="acoes-2"><button class="botao botao-secundario" data-remarcar>Remarcar</button><button class="botao botao-secundario" data-status="faltou">Faltou</button></div><button class="botao botao-perigo" data-status="cancelada">Cancelar consulta</button>' : '') +
         (c.status === 'concluida' && c.pagamento === 'pendente' ? '<button class="botao botao-principal" data-receber>Registrar pagamento</button>' : '') +
@@ -974,6 +996,10 @@ a { color: var(--azul-profundo); }
         '<button class="botao" data-ver-paciente="' + p.id + '">Ver ficha do paciente</button>' +
       '</div>',
       (raiz) => {
+        const tipo = $('#msg-tipo', raiz), texto = $('#msg-texto', raiz), enviar = $('#msg-enviar', raiz);
+        const atualizarLink = () => enviar.setAttribute('href', linkWhats(p.telefone, texto.value));
+        const trocar = () => { texto.value = textoMensagem(tipo.value, c); atualizarLink(); };
+        tipo.addEventListener('change', trocar); texto.addEventListener('input', atualizarLink); trocar();
         raiz.addEventListener('click', function h(e) {
           const t = e.target.closest('button'); if (!t) return;
           if (t.dataset.status) { c.status = t.dataset.status; gravar('consultas', c); avisar('Consulta marcada como ' + rotuloStatus[c.status].toLowerCase() + '.'); raiz.removeEventListener('click', h); detalheConsulta(c.id); desenhar(); }

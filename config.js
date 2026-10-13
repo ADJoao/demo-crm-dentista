@@ -91,6 +91,15 @@ const CONFIG = {
     ],
     // Horário de atendimento usado para mostrar os horários livres na agenda
     agenda: { inicio: '08:00', fim: '18:00', intervalo: 30, almoco: ['12:00', '13:00'], dias: [1, 2, 3, 4, 5] },
+    // Mensagens de WhatsApp por situação. Variáveis: {nome} {clinica} {profissional} {tratamento} {data} {quando} {hora} {valor}
+    mensagens: {
+      lembrete: 'Olá, {nome}! Aqui é da {clinica}. Passando para lembrar da sua consulta de {tratamento} {quando}, às {hora}, com a {profissional}. Podemos confirmar a sua presença?',
+      confirmada: 'Olá, {nome}! Sua consulta de {tratamento} está confirmada para {quando}, às {hora}. Pedimos que chegue 10 minutos antes. Até lá!',
+      concluida: 'Olá, {nome}! Agradecemos a sua visita à {clinica}. Se tiver qualquer dúvida sobre o seu {tratamento}, é só responder por aqui.',
+      pagamento: 'Olá, {nome}! Passando para lembrar do pagamento de {valor} referente a {tratamento}, feito em {data}. Qualquer dúvida, estamos à disposição.',
+      faltou: 'Olá, {nome}! Sentimos a sua falta na consulta de {tratamento} do dia {data}. Quer remarcar? Temos horários nesta semana.',
+      cancelada: 'Olá, {nome}! A sua consulta de {tratamento} do dia {data} foi cancelada. Quando quiser marcar um novo horário, é só falar com a gente.',
+    },
     formasPagamento: ['Pix', 'Cartão de crédito', 'Cartão de débito', 'Dinheiro', 'Convênio'],
     origens: ['Site', 'Instagram', 'WhatsApp', 'Indicação', 'Google', 'Passou na frente'],
   },
