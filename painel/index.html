@@ -245,6 +245,8 @@ a { color: var(--azul-profundo); }
 .fechar span:first-child { transform: rotate(45deg); }
 .fechar span:last-child { transform: rotate(-45deg); }
 .acoes { display: grid; gap: 8px; }
+.lixo { display: grid; gap: 12px; }
+.lixo-topo { display: flex; align-items: center; gap: 12px; }
 .msg-bloco { display: grid; gap: 8px; background: var(--nevoa); border-radius: 16px; padding: 12px; }
 .msg-bloco textarea { min-height: 120px; font-size: .9375rem; }
 .acoes-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -268,7 +270,7 @@ a { color: var(--azul-profundo); }
   .folha-alca { display: none; }
 }
 
-.aviso { display: flex; align-items: center; gap: 14px; position: fixed; left: 50%; bottom: calc(var(--nav-h) + 86px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; background: var(--tinta); color: var(--creme); padding: 12px 18px; border-radius: 999px; font-size: .9375rem; max-width: calc(100% - 32px); }
+.aviso { display: flex; align-items: center; gap: 14px; position: fixed; left: 50%; bottom: calc(var(--nav-h) + 86px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 60; width: max-content; background: var(--tinta); color: var(--creme); padding: 12px 18px; border-radius: 999px; font-size: .9375rem; max-width: calc(100% - 32px); }
 @media (min-width: 1024px) { .aviso { bottom: 28px; } }
 .aviso-desfazer { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--creme); background: transparent; color: var(--creme); font-weight: 600; cursor: pointer; }
 
@@ -309,6 +311,7 @@ a { color: var(--azul-profundo); }
     <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.08-.13-.27-.2-.57-.35m-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41Z"/></symbol>
     <symbol id="i-enviar" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4 12h14M13 6l6 6-6 6"/></symbol>
     <symbol id="i-baixar" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+    <symbol id="i-lixeira" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l.8 12.5h9.4L17.5 7M10 11v5.5M14 11v5.5"/></g></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></g></symbol>
   </defs>
 </svg>
@@ -458,7 +461,7 @@ a { color: var(--azul-profundo); }
       ['Priscila Andrade', 0, 'novo', 'Manhã'], ['Hugo Lacerda', 0, 'novo', 'Tarde'], ['Simone Prado', 1, 'novo', 'Tanto faz'],
       ['Otávio Rangel', 2, 'conversa', 'Tarde'], ['Débora Quintas', 3, 'conversa', 'Manhã'], ['Fábio Siqueira', 5, 'agendado', 'Manhã'], ['Lívia Torres', 8, 'perdido', 'Tarde'],
     ].map(([nome, dias, etapa, periodo], i) => ({ id: 'ct' + (i + 1), nome, telefone: '(22) 90000-' + pad(80 + i) + '00', interesse: interesses[i % interesses.length], periodo, criadoEm: new Date(somaDias(new Date(), -dias).getTime() - (i * 37 + 15) * 60000).toISOString(), etapa, origem: 'Site' }));
-    return { versao: 1, pacientes, consultas, contatos };
+    return { versao: 1, pacientes, consultas, contatos, lixeira: [] };
   }
 
   /* =================== Armazenamento =================== */
@@ -494,11 +497,27 @@ a { color: var(--azul-profundo); }
       try {
         const r = await fetch(C.planilhaUrl + '?acao=ler');
         const dados = await r.json();
-        if (dados && dados.pacientes) { db = { versao: 1, pacientes: dados.pacientes, consultas: dados.consultas || [], contatos: dados.contatos || [] }; salvarLocal(); return; }
+        if (dados && dados.pacientes) { db = { versao: 1, pacientes: dados.pacientes, consultas: dados.consultas || [], contatos: dados.contatos || [], lixeira: (db && db.lixeira) || [] }; purgarLixeira(); salvarLocal(); return; }
       } catch (e) { avisar('Planilha indisponível. Mostrando os dados deste aparelho.'); }
     }
     try { db = JSON.parse(localStorage.getItem(CHAVE)); } catch (e) { db = null; }
     if (!db || !db.pacientes) { db = gerarExemplo(); salvarLocal(); }
+    if (!db.lixeira) db.lixeira = [];
+    purgarLixeira();
+  }
+  // A lixeira guarda pacientes excluídos por 7 dias; depois são apagados de vez
+  const DIAS_LIXEIRA = 7;
+  function purgarLixeira() {
+    if (!db.lixeira) db.lixeira = [];
+    const limite = Date.now() - DIAS_LIXEIRA * 86400000;
+    const restam = db.lixeira.filter((x) => new Date(x.excluidoEm).getTime() > limite);
+    if (restam.length !== db.lixeira.length) { db.lixeira = restam; salvarLocal(); }
+  }
+  function restaurarDaLixeira(id) {
+    const item = db.lixeira.find((x) => x.id === id); if (!item) return;
+    db.lixeira = db.lixeira.filter((x) => x.id !== id);
+    gravar('pacientes', item.paciente);
+    item.consultas.forEach((c) => gravar('consultas', c));
   }
 
   /* =================== Regras da agenda =================== */
@@ -538,6 +557,7 @@ a { color: var(--azul-profundo); }
     { id: 'contatos', nome: 'Contatos do site', curto: 'Contatos', icone: 'i-contatos', baixo: false },
     { id: 'financeiro', nome: 'Financeiro', icone: 'i-financeiro', baixo: true },
     { id: 'assistente', nome: 'Assistente', icone: 'i-assistente', baixo: true },
+    { id: 'lixeira', nome: 'Lixeira', icone: 'i-lixeira', baixo: false },
   ];
   const estado = { view: 'inicio', dia: HOJE(), mes: HOJE().slice(0, 7), busca: '', filtroPac: 'todos', filtroFin: 'todos', filtroCont: 'abertos', chat: [] };
 
@@ -703,6 +723,19 @@ a { color: var(--azul-profundo); }
         '<div class="filtros">' + [['todos', 'Todos'], ['pago', 'Pagos'], ['pendente', 'A receber']].map(([k, n]) => '<button type="button" data-filtro-fin="' + k + '" aria-pressed="' + (estado.filtroFin === k) + '">' + n + '</button>').join('') + '</div>' +
         (lista.length ? '<ul class="lista">' + lista.map((c) => '<li><button class="item" type="button" data-consulta="' + c.id + '"><span class="item-hora">' + dataCurta(c.data) + '</span><span><span class="item-titulo">' + esc(paciente(c.pacienteId).nome) + '</span><span class="item-sub">' + esc(c.procedimento) + ' | ' + moeda(c.valor) + (c.forma ? ' | ' + esc(c.forma) : '') + '</span></span>' + etiquetaPag(c) + '</button></li>').join('') + '</ul>' : '<div class="vazio">Nenhum lançamento.</div>') +
       '</section>';
+  };
+
+  RENDER.lixeira = function () {
+    purgarLixeira();
+    const lista = db.lixeira.slice().sort((a, b) => b.excluidoEm.localeCompare(a.excluidoEm));
+    el().innerHTML =
+      '<p class="suave">Pacientes excluídos ficam aqui por ' + DIAS_LIXEIRA + ' dias e podem voltar com todas as consultas. Depois disso são apagados de vez.</p>' +
+      '<div class="secao">' + (lista.length ? '<ul class="lista">' + lista.map((x) => {
+        const dias = Math.floor((Date.now() - new Date(x.excluidoEm).getTime()) / 86400000);
+        const restam = Math.max(DIAS_LIXEIRA - dias, 1);
+        return '<li class="cartao lixo"><div class="lixo-topo"><span class="avatar" aria-hidden="true">' + esc(iniciais(x.paciente.nome)) + '</span><span><span class="item-titulo">' + esc(x.paciente.nome) + '</span><span class="item-sub">' + x.consultas.length + ' consultas | excluído ' + (dias === 0 ? 'hoje' : dias === 1 ? 'ontem' : 'há ' + dias + ' dias') + ' | some em ' + restam + (restam === 1 ? ' dia' : ' dias') + '</span></span></div>' +
+          '<div class="acoes-2"><button class="botao botao-secundario" type="button" data-lixo-voltar="' + x.id + '">Restaurar</button><button class="botao botao-perigo" type="button" data-lixo-apagar="' + x.id + '">Apagar para sempre</button></div></li>';
+      }).join('') + '</ul>' : '<div class="vazio">A lixeira está vazia.</div>') + '</div>';
   };
 
   /* =================== Assistente (simulado, sem IA externa) =================== */
@@ -1051,7 +1084,7 @@ a { color: var(--azul-profundo); }
       '<div class="acoes-2"><button class="botao botao-principal" data-agendar-pac="' + p.id + '">Marcar consulta</button><a class="botao botao-secundario" target="_blank" rel="noopener" href="' + linkWhats(p.telefone) + '"><svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>WhatsApp</a></div>' +
       '<h3 style="font-size:1.125rem;margin-top:6px">Consultas</h3>' +
       (cs.length ? '<ul class="lista">' + cs.slice(0, 12).map((c) => itemConsulta(c, true)).join('') + '</ul>' : '<p class="suave">Nenhuma consulta ainda.</p>') +
-      '<div class="acoes-2"><button class="botao" data-editar-pac="' + p.id + '">Editar dados</button><button class="botao botao-perigo" data-excluir-pac="' + p.id + '">Excluir</button></div>');
+      '<div class="acoes-2"><button class="botao" data-editar-pac="' + p.id + '">Editar dados</button><button class="botao botao-perigo" data-excluir-pac="' + p.id + '">Mover para a lixeira</button></div>');
   }
 
   function detalheContato(id) {
@@ -1121,13 +1154,16 @@ a { color: var(--azul-profundo); }
     else if (d.editarPac) formPaciente(db.pacientes.find((p) => p.id === d.editarPac));
     else if (d.excluirPac) {
       const pac = paciente(d.excluirPac), cons = db.consultas.filter((c) => c.pacienteId === d.excluirPac);
-      if (confirm('Excluir ' + pac.nome + ' e as ' + cons.length + ' consultas dele(a)? Você poderá desfazer logo em seguida.')) {
-        const antes = copiar(db);
+      if (confirm('Mover ' + pac.nome + ' e ' + cons.length + ' consultas para a lixeira? Fica guardado por ' + DIAS_LIXEIRA + ' dias.')) {
+        const item = { id: novoId('x'), excluidoEm: new Date().toISOString(), paciente: copiar(pac), consultas: copiar(cons) };
+        db.lixeira.push(item);
         cons.forEach((c) => apagar('consultas', c.id)); apagar('pacientes', d.excluirPac);
         fecharFolha(); montarNav(); desenhar();
-        avisar('Paciente excluído.', () => { db = antes; salvarLocal(); antes.pacientes.filter((p) => p.id === d.excluirPac).forEach((p) => sincronizar('pacientes', p)); cons.forEach((c) => sincronizar('consultas', c)); montarNav(); desenhar(); avisar('Paciente restaurado.'); });
+        avisar('Paciente movido para a lixeira.', () => { restaurarDaLixeira(item.id); montarNav(); desenhar(); avisar('Paciente restaurado.'); });
       }
     }
+    else if (d.lixoVoltar) { restaurarDaLixeira(d.lixoVoltar); desenhar(); avisar('Paciente restaurado com as consultas.'); }
+    else if (d.lixoApagar) { if (confirm('Apagar para sempre? Isso não pode ser desfeito.')) { db.lixeira = db.lixeira.filter((x) => x.id !== d.lixoApagar); salvarLocal(); desenhar(); avisar('Apagado para sempre.'); } }
     else if ('desfazer' in d) { const f = aoDesfazer; aoDesfazer = null; $('#aviso').hidden = true; if (f) f(); }
     else if (d.contato) detalheContato(d.contato);
     else if (d.livre) formConsulta({ data: estado.dia, hora: d.livre });
@@ -1140,7 +1176,7 @@ a { color: var(--azul-profundo); }
     else if (d.filtroCont) { estado.filtroCont = d.filtroCont; desenhar(); }
     else if (d.perguntar) perguntar(d.perguntar);
     else if ('baixar' in d) baixarPlanilha();
-    else if ('opcoes' in d) abrirFolha('Opções', '<div class="acoes"><button class="botao botao-secundario" data-baixar>Baixar planilha</button><a class="botao botao-secundario" href="#contatos" data-fechar>Contatos do site</a><a class="botao botao-secundario" href="../" target="_blank">Abrir o site</a><button class="botao botao-secundario" data-restaurar>Restaurar dados de exemplo</button><button class="botao" data-sair>Sair</button></div><p class="pequeno suave">Demonstração: os dados são fictícios e ficam salvos só neste navegador.</p>');
+    else if ('opcoes' in d) abrirFolha('Opções', '<div class="acoes"><button class="botao botao-secundario" data-baixar>Baixar planilha</button><a class="botao botao-secundario" href="#contatos" data-fechar>Contatos do site</a><a class="botao botao-secundario" href="#lixeira" data-fechar>Lixeira' + (db.lixeira.length ? ' (' + db.lixeira.length + ')' : '') + '</a><a class="botao botao-secundario" href="../" target="_blank">Abrir o site</a><button class="botao botao-secundario" data-restaurar>Restaurar dados de exemplo</button><button class="botao" data-sair>Sair</button></div><p class="pequeno suave">Demonstração: os dados são fictícios e ficam salvos só neste navegador.</p>');
     else if ('restaurar' in d) {
       if (confirm('Apagar as alterações e voltar aos dados de exemplo? Você poderá desfazer logo em seguida.')) {
         const antes = copiar(db), chatAntes = estado.chat;
