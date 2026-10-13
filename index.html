@@ -43,7 +43,7 @@
   --ouro-de: #A98A47;
   --ouro-ate: #D4B670;
   --linha: rgba(81, 156, 177, 0.25);
-  --header-h: 64px;
+  --header-h: 70px;
   --gutter: 16px;
   --raio: 24px;
   --secao: clamp(72px, 5vw + 52px, 128px);
@@ -51,7 +51,7 @@
   --fonte-texto: "Hanken Grotesk", "Helvetica Neue", system-ui, sans-serif;
 }
 @media (min-width: 720px) { :root { --gutter: 32px; } }
-@media (min-width: 1024px) { :root { --header-h: 76px; --gutter: 48px; } }
+@media (min-width: 1024px) { :root { --header-h: 84px; --gutter: 48px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 12px); }
@@ -118,7 +118,7 @@ a:hover { color: var(--azul-profundo-escuro); }
   border-bottom: 1px solid var(--linha);
 }
 .topo-linha { height: 100%; display: flex; align-items: center; gap: 8px; }
-.marca { display: block; width: 116px; margin-right: auto; border-radius: 4px; }
+.marca { display: block; width: 138px; margin-right: auto; border-radius: 4px; }
 .marca-recorte { display: block; overflow: hidden; aspect-ratio: 665 / 227; }
 /* recorta só a margem branca do arquivo original da logo, sem alterá-lo */
 .marca-recorte img {
@@ -153,7 +153,7 @@ a:hover { color: var(--azul-profundo-escuro); }
 .menu-celular .botao { width: 100%; margin-top: 20px; }
 
 @media (min-width: 1024px) {
-  .marca { width: 148px; }
+  .marca { width: 196px; }
   .nav-desktop { display: flex; gap: 8px; margin-right: 16px; }
   .nav-desktop a {
     display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px;
@@ -166,58 +166,90 @@ a:hover { color: var(--azul-profundo-escuro); }
 }
 
 /* ============ Hero ============ */
-.hero {
-  position: relative; overflow: hidden;
-  background: var(--nevoa);
-  padding: calc(var(--header-h) + 44px) 0 64px;
+.hero { padding: calc(var(--header-h) + 12px) 10px 0; }
+.hero-painel { position: relative; overflow: hidden; background: var(--nevoa); border-radius: 28px; padding: 36px 0 32px; }
+.hero-grade { position: relative; display: grid; grid-template-areas: "titulo" "arte" "lado" "numeros"; }
+.hero-titulo { grid-area: titulo; position: relative; z-index: 1; font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
+.h1-linha { display: block; font-size: clamp(1.6rem, 1.1rem + 2.2vw, 2.6rem); font-weight: 300; color: var(--tinta); }
+.h1-destaque {
+  display: block; margin-top: .12em;
+  font-size: clamp(3.1rem, 1.6rem + 7.4vw, 8.2rem); font-weight: 500; line-height: .94; letter-spacing: -0.035em;
+  color: var(--azul-profundo);
 }
-.hero-grade { position: relative; display: grid; }
-.hero-texto { position: relative; z-index: 1; }
-.hero-sub { margin-top: 20px; font-size: 1.1875rem; line-height: 1.55; max-width: 34rem; }
-.hero-acoes { display: grid; gap: 12px; margin-top: 32px; }
+.palavra { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+.palavra > span { display: inline-block; }
+
+.hero-arte { grid-area: arte; position: relative; z-index: 2; width: min(100%, 440px); justify-self: center; margin: -8px 0 -12px; }
+.arte-quadro { position: relative; aspect-ratio: 1; }
+.arte { position: absolute; max-width: none; }
+.arte-anel-tras { left: 13.5%; top: 42.79%; width: 73.36%; }
+.arte-gotas-tras { left: 13.79%; top: 8.86%; width: 68.07%; }
+.arte-dente { left: 29.07%; top: 10.21%; width: 45.71%; }
+.arte-gotas-frente { left: 15.57%; top: 11%; width: 75.43%; }
+.arte-anel-frente { left: 12.64%; top: 40.29%; width: 74.43%; }
+
+.hero-lado { grid-area: lado; position: relative; z-index: 1; }
+.hero-sub {
+  font-size: 1.125rem; line-height: 1.55; max-width: 30rem;
+  background: var(--creme); border-radius: 20px; padding: 18px 20px;
+}
+.hero-acoes { display: grid; gap: 12px; margin-top: 20px; }
 .hero-acoes .botao { width: 100%; }
-.selo {
-  display: inline-flex; align-items: center; gap: 10px;
-  min-height: 44px; margin-top: 28px; padding: 8px 18px 8px 14px;
-  background: var(--creme); border: 1px solid var(--linha); border-radius: 999px;
-  color: var(--tinta); font-size: .9375rem; text-decoration: none;
-}
-.selo:hover { color: var(--tinta); border-color: var(--azul); }
-.estrelas { display: inline-flex; gap: 2px; }
-.estrelas svg { width: 14px; height: 14px; }
-.hero-info { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--tinta-suave); font-size: .9375rem; }
+.hero-info { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--tinta-suave); font-size: .9375rem; }
 .hero-info li { display: inline-flex; align-items: center; gap: 8px; }
 .hero-info .icone { width: 18px; height: 18px; color: var(--azul); }
 
-.hero-curva {
-  position: absolute; z-index: 0; pointer-events: none;
-  top: -24px; right: -40vw; width: 104vw; height: auto;
-  opacity: .4; overflow: visible;
-  -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 62%);
-  mask-image: linear-gradient(180deg, #000 30%, transparent 62%);
-}
+.hero-numeros { grid-area: numeros; list-style: none; margin: 32px 0 0; padding: 20px 0 0; border-top: 1px solid var(--linha); display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.hero-numeros li, .hero-numeros a { display: grid; align-content: start; gap: 2px; color: var(--tinta); text-decoration: none; }
+.hero-numeros strong { font: 300 clamp(2.2rem, 1.6rem + 2vw, 3.2rem)/1 var(--fonte-titulo); letter-spacing: -0.03em; color: var(--tinta); }
+.hero-numeros span:not(.estrelas) { font-size: .875rem; line-height: 1.35; color: var(--tinta-suave); }
+.hero-numeros .estrelas svg { width: 11px; height: 11px; }
+
+/* Faixa em loop com os tratamentos */
+.letreiro { overflow: hidden; padding: 22px 0; border-bottom: 1px solid var(--linha); }
+.letreiro-trilho { display: flex; width: max-content; }
+.letreiro-grupo { display: flex; align-items: center; gap: 28px; padding-right: 28px; font: 300 clamp(1.5rem, 1.1rem + 1.6vw, 2.4rem)/1.2 var(--fonte-titulo); letter-spacing: -0.01em; white-space: nowrap; color: var(--tinta); }
+.letreiro-grupo svg { width: 14px; height: 14px; flex: none; }
+
+/* Movimento do hero */
 .traco { fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.js .desenha { stroke-dasharray: 1 1; stroke-dashoffset: 1; }
 @media (prefers-reduced-motion: no-preference) {
-  .js .desenha { animation: desenhar 1.8s cubic-bezier(.6, 0, .3, 1) .15s forwards; }
-  .js .desenha-2 { animation-delay: .3s; animation-duration: 1.6s; }
-  .js .desenha-3 { animation-delay: .45s; animation-duration: 1.5s; }
+  .js .palavra > span { transform: translateY(105%); animation: subir .9s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: calc(.08s + var(--i) * .07s); }
+  .js .hero-lado, .js .hero-numeros { opacity: 0; animation: aparecer .8s ease .75s forwards; }
+  .js .hero-numeros { animation-delay: .95s; }
+  .js .arte-quadro { opacity: 0; animation: entrar 1.1s cubic-bezier(.2, .7, .2, 1) .25s forwards; }
+  .js .arte-dente { animation: flutuar 6s ease-in-out 1.4s infinite; }
+  .js .arte-gotas-frente { animation: flutuar-gotas 7s ease-in-out 1.4s infinite; }
+  .js .arte-gotas-tras { animation: flutuar-gotas 9s ease-in-out 1.4s infinite reverse; }
+  .js .letreiro-trilho { animation: letreiro 38s linear infinite; }
+  .js .revela .palavra > span { transform: translateY(105%); transition: transform .9s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i) * .05s); }
+  .js .revela.visivel .palavra > span { transform: none; }
 }
-@media (prefers-reduced-motion: reduce) { .js .desenha { stroke-dashoffset: 0; } }
-@keyframes desenhar { to { stroke-dashoffset: 0; } }
+@keyframes subir { to { transform: none; } }
+@keyframes aparecer { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes entrar { from { opacity: 0; transform: translateY(30px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes flutuar { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3.5%) rotate(-1.5deg); } }
+@keyframes flutuar-gotas { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5%); } }
+@keyframes letreiro { to { transform: translateX(-50%); } }
 
 @media (min-width: 720px) {
+  .hero { padding-inline: 16px; }
   .hero-acoes { display: flex; flex-wrap: wrap; }
   .hero-acoes .botao { width: auto; }
 }
 @media (min-width: 1024px) {
-  .hero { padding: calc(var(--header-h) + 32px) 0 48px; }
+  .hero { padding: calc(var(--header-h) + 16px) 20px 0; }
+  .hero-painel { border-radius: 36px; padding: 48px 0 44px; }
   .hero-grade {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: 24px;
-    min-height: min(760px, calc(100svh - var(--header-h) - 80px));
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+    grid-template-areas: "titulo titulo titulo" "lado arte numeros";
+    align-items: end;
   }
-  .hero-curva { position: relative; top: auto; right: auto; width: 100%; max-width: 520px; justify-self: end; opacity: 1; -webkit-mask-image: none; mask-image: none; }
+  .hero-arte { width: 100%; max-width: 520px; margin: -9vw 0 -20px; }
+  .hero-lado { align-self: center; padding-bottom: 40px; }
+  .hero-numeros { grid-template-columns: 1fr; gap: 28px; margin: 0; padding: 0 0 40px 28px; border-top: 0; border-left: 1px solid var(--linha); align-self: center; }
 }
+@media (min-width: 1280px) { .hero-titulo { max-width: 1200px; } }
 
 /* ============ Seções ============ */
 .secao { padding-block: var(--secao); }
@@ -368,6 +400,26 @@ a:hover { color: var(--azul-profundo-escuro); }
   .avaliacoes-grade { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: center; gap: 48px; }
 }
 
+.nota-grande {
+  background: linear-gradient(100deg, var(--tinta) 0%, var(--azul-profundo) 55%, #3A8099 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.depoimentos { margin-top: 56px; overflow: hidden; }
+.depoimentos-trilho { display: flex; width: max-content; gap: 16px; }
+.depoimento {
+  width: min(82vw, 360px); flex: none; margin: 0;
+  background: var(--creme); border-radius: 24px; padding: 24px 24px 22px;
+  display: grid; gap: 14px; align-content: start;
+}
+.depoimento blockquote { margin: 0; font-size: 1rem; line-height: 1.55; }
+.depoimento figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .9375rem; color: var(--tinta-suave); }
+.depoimento .estrelas svg { width: 13px; height: 13px; }
+@media (prefers-reduced-motion: no-preference) {
+  .js .depoimentos-trilho { animation: letreiro 60s linear infinite; }
+  .depoimentos:hover .depoimentos-trilho, .depoimentos:focus-within .depoimentos-trilho { animation-play-state: paused; }
+}
+@media (prefers-reduced-motion: reduce) { .depoimentos { overflow-x: auto; } }
+
 /* ============ Sobre ============ */
 .sobre h2 { max-width: 15em; font-size: clamp(2.3rem, 1.4rem + 3.6vw, 4.4rem); }
 .sobre-curva { display: block; width: 100%; height: 120px; margin: 28px 0 24px; overflow: visible; }
@@ -406,7 +458,7 @@ a:hover { color: var(--azul-profundo-escuro); }
 /* ============ Rodapé ============ */
 .rodape { position: relative; overflow: hidden; padding-top: 64px; }
 .rodape-grade { display: grid; gap: 28px; }
-.rodape .marca-recorte { width: 170px; }
+.rodape .marca-recorte { width: 220px; }
 .rodape-col { display: grid; gap: 4px; align-content: start; }
 .rodape-col a { display: block; padding-block: 11px; justify-self: start; }
 .rodape-base { display: grid; gap: 6px; margin-top: 40px; padding-top: 20px; padding-bottom: 8px; border-top: 1px solid var(--linha); font-size: .9375rem; color: var(--tinta-suave); }
@@ -492,34 +544,48 @@ a:hover { color: var(--azul-profundo-escuro); }
 
   <!-- Hero -->
   <section class="hero" id="inicio" aria-labelledby="titulo-hero">
-    <div class="wrap hero-grade">
-      <div class="hero-texto">
-        <h1 id="titulo-hero">Cuidado completo para o sorriso de toda a família</h1>
-        <p class="hero-sub">A <span data-c="responsavel.nome">Dra. Paula Arieira</span> atende adultos e crianças em um só lugar, com todos os tratamentos odontológicos.</p>
-        <div class="hero-acoes">
-          <a class="botao botao-principal" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
-            <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Agendar pelo WhatsApp
-          </a>
-          <a class="botao botao-secundario" href="#tratamentos">Ver tratamentos</a>
+    <div class="hero-painel">
+      <div class="wrap hero-grade">
+        <h1 id="titulo-hero" class="hero-titulo">
+          <span class="h1-linha" data-palavras>Cuidado completo para o</span>
+          <span class="h1-destaque" data-palavras>sorriso de toda a família</span>
+        </h1>
+
+        <div class="hero-arte" aria-hidden="true">
+          <div class="arte-quadro">
+            <img class="arte arte-anel-tras" src="img/hero-anel-tras.webp" width="1027" height="239" alt="" fetchpriority="high">
+            <img class="arte arte-gotas-tras" src="img/hero-gotas-tras.webp" width="953" height="996" alt="">
+            <img class="arte arte-dente" src="img/hero-dente.webp" width="640" height="1014" alt="" fetchpriority="high">
+            <img class="arte arte-gotas-frente" src="img/hero-gotas-frente.webp" width="1056" height="1065" alt="">
+            <img class="arte arte-anel-frente" src="img/hero-anel-frente.webp" width="1042" height="263" alt="">
+          </div>
         </div>
-        <a class="selo" data-link="google" href="https://www.google.com/maps/search/?api=1&amp;query=Arieira%20Odontologia%20Especializada%2C%20Av.%20Joaquim%20Nogueira%2C%20926" target="_blank" rel="noopener">
-          <span class="estrelas" aria-hidden="true"><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg></span>
-          <span><span data-c="google.nota">5,0</span> com <span data-c="google.total">24</span> avaliações no Google</span>
-        </a>
-        <ul class="hero-info" data-se="info" hidden>
-          <li data-se="cidade" hidden><svg class="icone" aria-hidden="true"><use href="#i-cidade"/></svg><span>Atendimento em <span data-c="CIDADE"></span></span></li>
-          <li data-se="horario" hidden><svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg><span data-c="HORARIO"></span></li>
+
+        <div class="hero-lado">
+          <p class="hero-sub">A <span data-c="responsavel.nome">Dra. Paula Arieira</span> atende adultos e crianças em um só lugar, com todos os tratamentos odontológicos.</p>
+          <div class="hero-acoes">
+            <a class="botao botao-principal" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
+              <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Agendar pelo WhatsApp
+            </a>
+            <a class="botao botao-secundario" href="#tratamentos">Ver tratamentos</a>
+          </div>
+          <ul class="hero-info" data-se="info" hidden>
+            <li data-se="cidade" hidden><svg class="icone" aria-hidden="true"><use href="#i-cidade"/></svg><span>Atendimento em <span data-c="CIDADE"></span></span></li>
+            <li data-se="horario" hidden><svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg><span data-c="HORARIO"></span></li>
+          </ul>
+        </div>
+
+        <ul class="hero-numeros">
+          <li><a data-link="google" href="https://www.google.com/maps/search/?api=1&amp;query=Arieira%20Odontologia%20Especializada%2C%20Av.%20Joaquim%20Nogueira%2C%20926" target="_blank" rel="noopener"><strong data-c="google.nota">5,0</strong><span class="estrelas" aria-hidden="true"><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg><svg><use href="#i-estrela"/></svg></span><span>nota no Google</span></a></li>
+          <li><strong data-c="google.total">24</strong><span>avaliações no Google</span></li>
+          <li><strong data-total-tratamentos>9</strong><span>áreas de tratamento</span></li>
         </ul>
       </div>
-
-      <!-- Curva do dente: inspirada no traço da logo, desenhada uma vez ao carregar -->
-      <svg class="hero-curva" viewBox="0 110 600 620" fill="none" aria-hidden="true" focusable="false">
-        <path class="traco desenha desenha-3" pathLength="1" stroke="url(#ouro-linha)" stroke-width="1.4" d="M-40 662C130 560 360 270 660 170"/>
-        <path class="traco desenha desenha-2" pathLength="1" stroke="#519CB1" stroke-width="1.1" stroke-opacity=".7" d="M-40 236C190 250 420 430 660 548"/>
-        <path class="traco desenha" pathLength="1" stroke="#519CB1" stroke-width="1.8" d="M-30 700C-11.7 698 46.7 696 80 688C113.3 680 146.7 667 170 652C193.3 637 212.7 620 220 598C227.3 576 218 548 214 520C210 492 202.3 459.2 196 430C189.7 400.8 181.7 372 176 345C170.3 318 163 292.2 162 268C161 243.8 162.3 219.3 170 200C177.7 180.7 193.7 161 208 152C222.3 143 240.7 142 256 146C271.3 150 285.3 176 300 176C314.7 176 328.7 150 344 146C359.3 142 377.7 143 392 152C406.3 161 422.3 180.7 430 200C437.7 219.3 439 243.8 438 268C437 292.2 429.7 318 424 345C418.3 372 410.3 400.8 404 430C397.7 459.2 390 492 386 520C382 548 385.7 591.3 380 598C374.3 604.7 360.3 578.3 352 560C343.7 541.7 338.7 507 330 488C321.3 469 310 446 300 446C290 446 278.3 469 270 488C261.7 507 255.7 539.3 250 560C244.3 580.7 234 595 236 612C238 629 241.3 647.3 262 662C282.7 676.7 323.7 691.7 360 700C396.3 708.3 433.3 712 480 712C526.7 712 613.3 702 640 700"/>
-      </svg>
     </div>
   </section>
+
+  <!-- Faixa com os tratamentos em loop -->
+  <div class="letreiro" aria-hidden="true"><div class="letreiro-trilho" id="letreiro"></div></div>
 
   <!-- Adultos e crianças -->
   <section class="faixa" aria-labelledby="titulo-faixa">
@@ -619,6 +685,9 @@ a:hover { color: var(--azul-profundo-escuro); }
         <p class="avaliacoes-total"><span data-c="google.total">24</span> avaliações no Google</p>
         <a class="botao botao-secundario" data-link="google" href="https://www.google.com/maps/search/?api=1&amp;query=Arieira%20Odontologia%20Especializada%2C%20Av.%20Joaquim%20Nogueira%2C%20926" target="_blank" rel="noopener">Ver avaliações no Google</a>
       </div>
+    </div>
+    <div class="depoimentos" id="depoimentos" hidden>
+      <div class="depoimentos-trilho" id="depoimentos-trilho"></div>
     </div>
   </section>
 
@@ -766,6 +835,9 @@ const CONFIG = {
     { nome: 'Cirurgia de siso', texto: 'Avaliação e remoção dos dentes do siso, quando indicada.' },
     { nome: 'Próteses fixas e removíveis', texto: 'Coroas, pontes e dentaduras para repor dentes perdidos ou muito desgastados.' },
   ],
+  // Avaliações reais copiadas do Google (texto e primeiro nome). Vazio: a faixa de avaliações não aparece.
+  // Formato: { nome: 'Maria S.', texto: '...' }
+  avaliacoes: [],
   // Cada foto já traz "Antes" em cima e "Depois" embaixo. Use as fotos inteiras.
   resultados: [
     { titulo: 'Lentes', legenda: 'Lentes de contato dental para ajustar a cor e o formato dos dentes.', imagem: 'img/lentes.jpg', alt: 'Antes e depois de lentes de contato dental: sorriso antes, em cima, e depois, embaixo.' },
@@ -848,6 +920,49 @@ const CONFIG = {
   lista.innerHTML = CONFIG.tratamentos.map((t, i) =>
     '<li' + (i === linhas ? ' class="inicio-coluna"' : '') + '><h3>' + esc(t.nome) + '</h3><p>' + esc(t.texto) + '</p></li>'
   ).join('');
+
+  $$('[data-total-tratamentos]').forEach((el) => { el.textContent = CONFIG.tratamentos.length; });
+
+  /* ---------- Faixa em loop com os tratamentos ---------- */
+  const estrelaOuro = '<svg aria-hidden="true" viewBox="0 0 24 24"><path fill="url(#ouro)" d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>';
+  const grupoLetreiro = '<div class="letreiro-grupo">' + CONFIG.tratamentos.map((t) => '<span>' + esc(t.nome) + '</span>' + estrelaOuro).join('') + '</div>';
+  $('#letreiro').innerHTML = grupoLetreiro + grupoLetreiro;
+
+  /* ---------- Avaliações em loop (só com avaliações reais no CONFIG) ---------- */
+  if (CONFIG.avaliacoes && CONFIG.avaliacoes.length) {
+    const estrelas = '<span class="estrelas" aria-label="5 estrelas" role="img">' + '<svg aria-hidden="true"><use href="#i-estrela"/></svg>'.repeat(5) + '</span>';
+    const cartoes = CONFIG.avaliacoes.map((a) => '<figure class="depoimento"><blockquote>' + esc(a.texto) + '</blockquote><figcaption><span>' + esc(a.nome) + '</span>' + estrelas + '</figcaption></figure>').join('');
+    const trilhoDep = $('#depoimentos-trilho');
+    trilhoDep.innerHTML = cartoes + '<div style="display:contents" aria-hidden="true">' + cartoes + '</div>';
+    $('#depoimentos').hidden = false;
+  }
+
+  /* ---------- Texto que sobe palavra por palavra ---------- */
+  let contador = 0;
+  function dividir(el, reiniciar) {
+    if (reiniciar) contador = 0;
+    Array.from(el.childNodes).forEach((no) => {
+      if (no.nodeType === 3) {
+        const frag = doc.createDocumentFragment();
+        no.textContent.split(/(\s+)/).forEach((parte) => {
+          if (!parte) return;
+          if (/^\s+$/.test(parte)) { frag.appendChild(doc.createTextNode(parte)); return; }
+          const caixa = doc.createElement('span'); caixa.className = 'palavra';
+          const dentro = doc.createElement('span'); dentro.textContent = parte; dentro.style.setProperty('--i', contador++);
+          caixa.appendChild(dentro); frag.appendChild(caixa);
+        });
+        no.replaceWith(frag);
+      } else if (no.nodeType === 1) dividir(no, false);
+    });
+  }
+  contador = 0;
+  $$('[data-palavras]').forEach((el) => dividir(el, false));
+  const titulos = $$('main h2');
+  titulos.forEach((h) => { h.classList.add('revela'); dividir(h, true); });
+  const obsTitulos = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('visivel'); obsTitulos.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -12% 0px' });
+  titulos.forEach((h) => obsTitulos.observe(h));
 
   /* ---------- Resultados (carrossel no celular) ---------- */
   const casos = $('#casos');
