@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Política de privacidade | Arieira Odontologia Especializada</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root { --creme:#FEFDF9; --azul-profundo:#2E6678; --tinta:#1E3B45; --tinta-suave:#4A6670; --nevoa:#E9F2F5; --linha:rgba(81,156,177,.25); }
+*,*::before,*::after { box-sizing: border-box; }
+body { margin:0; background:var(--creme); color:var(--tinta); font:400 1.0625rem/1.65 "Hanken Grotesk","Helvetica Neue",system-ui,sans-serif; }
+main { max-width: 44rem; margin: 0 auto; padding: 32px 16px 72px; }
+h1,h2 { font-family:"Jost","Futura",sans-serif; font-weight:300; letter-spacing:-.015em; line-height:1.15; margin:0; }
+h1 { font-size: clamp(2.2rem, 1.5rem + 3vw, 3.4rem); margin: 20px 0 8px; }
+h2 { font-size: 1.6rem; margin: 40px 0 10px; font-weight: 400; }
+p, ul { margin: 0 0 14px; } ul { padding-left: 20px; } li { margin-bottom: 6px; }
+a { color: var(--azul-profundo); }
+.voltar { display:inline-flex; align-items:center; min-height:44px; }
+.suave { color: var(--tinta-suave); }
+.logo { display:block; width:170px; overflow:hidden; aspect-ratio:665/227; }
+.logo img { display:block; width:113.985%; max-width:none; height:auto; margin-left:-7.068%; margin-top:-16.842%; mix-blend-mode:multiply; }
+section { border-top: 1px solid var(--linha); }
+</style>
+</head>
+<body>
+<main>
+  <a class="logo" href="./" aria-label="Voltar para o site"><img src="img/logo.png" width="758" height="451" alt="Arieira Odontologia Especializada"></a>
+  <h1>Política de privacidade</h1>
+  <p class="suave">Atualizada em outubro de 2026. Este texto explica, em linguagem simples, como a clínica trata os seus dados, conforme a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).</p>
+
+  <section><h2>Quem é responsável pelos dados</h2>
+  <p><span data-c="clinica.nome">Arieira Odontologia Especializada</span>, responsável: <span data-c="responsavel.nome">Dra. Paula Arieira</span>, <span data-c="CRO">CRO-RJ 44553</span>. Endereço: <span data-c="endereco">Av. Joaquim Nogueira, 926</span>.</p></section>
+
+  <section><h2>Quais dados coletamos</h2>
+  <p>Só os que você mesmo informa no formulário "Agendar avaliação":</p>
+  <ul><li>nome;</li><li>número de WhatsApp;</li><li>tratamento de interesse e melhor período para o atendimento.</li></ul>
+  <p>Não pedimos dados de saúde, documentos nem dados de pagamento pelo site.</p></section>
+
+  <section><h2>Para que usamos</h2>
+  <p>Apenas para responder ao seu pedido, combinar o horário da avaliação e confirmar a consulta. Não usamos seus dados para publicidade de terceiros e não os vendemos.</p>
+  <p>Base legal: o seu consentimento, dado ao marcar a opção de aceite no formulário, e a realização de procedimentos preliminares a pedido seu.</p></section>
+
+  <section><h2>Cookies e rastreadores</h2>
+  <p>Este site não usa cookies de publicidade nem ferramentas de análise ou rastreamento. As fontes de texto ficam no próprio site, sem carregar nada de terceiros. Por isso não há aviso de cookies a aceitar. Se isso mudar, avisaremos aqui e pediremos o seu consentimento antes.</p></section>
+
+  <section><h2>Com quem os dados são compartilhados</h2>
+  <p>Ao enviar o formulário, o WhatsApp é aberto com uma mensagem pronta. A conversa passa a ser regida pela política de privacidade do WhatsApp. Os links para Instagram e Google Maps só são abertos se você tocar neles, e então valem as políticas dessas empresas.</p></section>
+
+  <section><h2>Avaliações de pacientes</h2>
+  <p>As avaliações mostradas neste site foram publicadas pelos próprios pacientes no Google. Exibimos apenas o primeiro nome e a inicial do sobrenome. Se você quer que a sua avaliação deixe de aparecer aqui, é só pedir pelos contatos abaixo.</p></section>
+
+  <section><h2>Por quanto tempo guardamos</h2>
+  <p>Pelo tempo necessário para atender o seu pedido. Se você não seguir com o atendimento, apagamos o contato quando solicitado.</p></section>
+
+  <section><h2>Seus direitos</h2>
+  <p>Você pode pedir, a qualquer momento: confirmação de que tratamos seus dados, acesso, correção, exclusão, informação sobre compartilhamento e retirada do consentimento.</p>
+  <p>Para isso, fale com a clínica pelo WhatsApp <a data-link="whatsapp" data-c="whatsapp.texto" href="https://wa.me/5522992474474">(22) 99247-4474</a> ou pelo telefone <a data-link="telefone" data-c="telefone.texto" href="tel:+552220409551">(22) 2040-9551</a>.</p></section>
+
+  <p style="margin-top:40px"><a class="voltar" href="./">Voltar para o site</a></p>
+</main>
+<script src="config.js"></script>
+<script>
+(function () {
+  const pegar = (o, c) => c.split('.').reduce((x, k) => (x == null ? undefined : x[k]), o);
+  const extras = { CRO: CRO || 'CRO-RJ 00000' };
+  document.querySelectorAll('[data-c]').forEach((el) => { const k = el.dataset.c; const v = k in extras ? extras[k] : pegar(CONFIG, k); if (v != null) el.textContent = v; });
+  document.querySelectorAll('[data-link="whatsapp"]').forEach((a) => a.href = 'https://wa.me/' + CONFIG.whatsapp.numero);
+  document.querySelectorAll('[data-link="telefone"]').forEach((a) => a.href = CONFIG.telefone.link);
+})();
+</script>
+</body>
+</html>

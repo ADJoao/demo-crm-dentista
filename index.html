@@ -13,9 +13,7 @@
 <meta property="og:title" content="Arieira Odontologia Especializada">
 <meta property="og:description" content="Dentista para adultos e crianças, com todos os tratamentos odontológicos em um só lugar.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FEFDF9'/%3E%3Cpath d='M10.5 6.5c-2.6 0-4 2-4 4.8 0 2.8 1.1 4.6 1.8 7.4.8 3 1 8.3 3 8.3 1.9 0 2-5.6 4.7-5.6s2.8 5.6 4.7 5.6c2 0 2.2-5.3 3-8.3.7-2.8 1.8-4.6 1.8-7.4 0-2.8-1.4-4.8-4-4.8-2.1 0-3 1.4-5.5 1.4s-3.4-1.4-5.5-1.4Z' fill='none' stroke='%23519CB1' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500&family=Jost:wght@300;400&display=swap">
+<link rel="stylesheet" href="fonts/fonts.css">
 <script>document.documentElement.classList.add('js');</script>
 <script type="application/ld+json" id="dados-estruturados">
 {
@@ -43,6 +41,9 @@
   --ouro-de: #A98A47;
   --ouro-ate: #D4B670;
   --linha: rgba(81, 156, 177, 0.25);
+  --whats: #25D366;           /* verde do WhatsApp */
+  --whats-escuro: #1EBE5A;
+  --whats-tinta: #0B2A1C;     /* texto e ícone sobre o verde (contraste AA) */
   --header-h: 70px;
   --gutter: 16px;
   --raio: 24px;
@@ -54,6 +55,7 @@
 @media (min-width: 1024px) { :root { --header-h: 84px; --gutter: 48px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
+main, footer { overflow-x: clip; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--header-h) + 12px); }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
@@ -96,17 +98,44 @@ a:hover { color: var(--azul-profundo-escuro); }
 
 /* ============ Botões ============ */
 .botao {
+  position: relative; overflow: hidden; isolation: isolate; -webkit-tap-highlight-color: transparent;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   min-height: 48px; padding: 12px 26px;
   border: 1.5px solid transparent; border-radius: 999px;
   font: 500 1rem/1.2 var(--fonte-texto); text-decoration: none; text-align: center;
   cursor: pointer;
-  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+  transition: transform .2s cubic-bezier(.2, .7, .2, 1), box-shadow .2s ease, background-color .2s ease, color .2s ease, border-color .2s ease, background-size .3s ease;
 }
+.botao .icone { transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
+.botao:active { transform: scale(.96); transition-duration: .08s; }
 .botao-principal { background: var(--azul-profundo); color: var(--creme); }
 .botao-principal:hover { background: var(--azul-profundo-escuro); color: var(--creme); }
-.botao-secundario { border-color: var(--azul-profundo); color: var(--azul-profundo); background: transparent; }
-.botao-secundario:hover { background: rgba(46, 102, 120, 0.08); color: var(--azul-profundo-escuro); }
+.botao-secundario {
+  border-color: var(--azul-profundo); color: var(--azul-profundo);
+  background: linear-gradient(var(--azul-profundo), var(--azul-profundo)) no-repeat left center / 0% 100% transparent;
+}
+.botao-secundario:hover { background-size: 100% 100%; color: var(--creme); }
+.botao-whats { background: var(--whats); color: var(--whats-tinta); border-color: var(--whats); }
+.botao-whats:hover { background: var(--whats-escuro); border-color: var(--whats-escuro); color: var(--whats-tinta); }
+/* brilho que cruza o botão ao passar o mouse */
+.botao-principal::after, .botao-whats::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, .38) 50%, transparent 65%);
+  transform: translateX(-130%);
+}
+@media (hover: hover) {
+  .botao:hover { transform: translateY(-2px); }
+  .botao:active { transform: translateY(0) scale(.96); }
+  .botao:hover .icone { transform: scale(1.15) rotate(-8deg); }
+  .botao-principal:hover { box-shadow: 0 10px 22px -10px rgba(46, 102, 120, .7); }
+  .botao-whats:hover { box-shadow: 0 10px 22px -10px rgba(18, 140, 60, .75); }
+  .botao-principal:hover::after, .botao-whats:hover::after { transform: translateX(130%); transition: transform .7s ease; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .botao, .botao .icone { transition: background-color .01s, color .01s; }
+  .botao:hover, .botao:active, .botao:hover .icone { transform: none; }
+  .botao::after { display: none; }
+}
 
 /* ============ Cabeçalho ============ */
 .topo {
@@ -127,6 +156,16 @@ a:hover { color: var(--azul-profundo-escuro); }
   mix-blend-mode: multiply;
 }
 .nav-desktop { display: none; }
+.link-icone { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 50%; color: var(--tinta); transition: color .2s ease, background-color .2s ease, transform .2s ease; }
+.link-icone .icone { width: 22px; height: 22px; transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
+.link-icone:hover { color: var(--azul-profundo); background: var(--nevoa); }
+.link-icone:hover .icone { transform: scale(1.15) rotate(-8deg); }
+.link-icone:active { transform: scale(.92); }
+@media (max-width: 400px) {
+  .topo-linha { gap: 4px; }
+  .marca { width: 112px; }
+  .botao-topo { padding: 10px 12px; font-size: .875rem; gap: 6px; }
+}
 .botao-topo { min-height: 44px; padding: 10px 16px; font-size: .9375rem; gap: 8px; }
 .botao-topo .texto-longo { display: none; }
 .botao-menu {
@@ -214,16 +253,20 @@ a:hover { color: var(--azul-profundo-escuro); }
 /* Movimento do hero */
 .traco { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 @media (prefers-reduced-motion: no-preference) {
-  .js .palavra > span { transform: translateY(105%); animation: subir .9s cubic-bezier(.2, .7, .2, 1) forwards; animation-delay: calc(.08s + var(--i) * .07s); }
-  .js .hero-lado, .js .hero-numeros { opacity: 0; animation: aparecer .8s ease .75s forwards; }
-  .js .hero-numeros { animation-delay: .95s; }
-  .js .arte-quadro { opacity: 0; animation: entrar 1.1s cubic-bezier(.2, .7, .2, 1) .25s forwards; }
   .js .arte-dente { animation: flutuar 6s ease-in-out 1.4s infinite; }
   .js .arte-gotas-frente { animation: flutuar-gotas 7s ease-in-out 1.4s infinite; }
   .js .arte-gotas-tras { animation: flutuar-gotas 9s ease-in-out 1.4s infinite reverse; }
   .js .letreiro-trilho { animation: letreiro 38s linear infinite; }
-  .js .revela .palavra > span { transform: translateY(105%); transition: transform .9s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i) * .05s); }
+  .js .revela .palavra > span { transform: translateY(110%); transition: transform .9s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--i) * .06s); }
   .js .revela.visivel .palavra > span { transform: none; }
+  /* entrada ao rolar: repete toda vez que a seção volta para a tela */
+  .js .rv { opacity: 0; transform: translate3d(0, 30px, 0); transition: opacity .7s ease, transform .85s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--d, 0) * 80ms); }
+  .js .rv-esq { transform: translate3d(-40px, 0, 0); }
+  .js .rv-dir { transform: translate3d(40px, 0, 0); }
+  .js .rv-zoom { transform: translate3d(0, 24px, 0) scale(.95); }
+  .js .rv.visivel { opacity: 1; transform: none; }
+  .js .caso img { clip-path: inset(7% 6% 7% 6% round 24px); transform: scale(1.06); transition: clip-path 1s cubic-bezier(.2, .7, .2, 1), transform 1.1s cubic-bezier(.2, .7, .2, 1); transition-delay: calc(var(--d, 0) * 80ms + 120ms); }
+  .js .caso.visivel img { clip-path: inset(0 round 24px); transform: none; }
 }
 @keyframes subir { to { transform: none; } }
 @keyframes aparecer { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
@@ -346,7 +389,8 @@ a:hover { color: var(--azul-profundo-escuro); }
   .js .protese-fixo { position: sticky; top: 0; height: 100vh; height: 100svh; padding-top: var(--header-h); }
   .js .palco { height: auto; flex: 1 1 auto; min-height: 0; }
   .js .peca-implante, .js .peca-pilar, .js .peca-coroa { will-change: transform, opacity; }
-  .js .legendas { display: grid; justify-items: center; padding: 8px var(--gutter) calc(24px + env(safe-area-inset-bottom)); }
+  .js .legendas { display: grid; justify-items: center; padding: 8px var(--gutter) calc(76px + env(safe-area-inset-bottom)); }
+  @media (min-width: 1024px) { .js .legendas { padding-bottom: calc(24px + env(safe-area-inset-bottom)); } }
   .js .legendas li { grid-area: 1 / 1; opacity: 0; transition: opacity .3s ease; }
   .js .legendas li.ativa { opacity: 1; }
 }
@@ -413,14 +457,16 @@ a:hover { color: var(--azul-profundo-escuro); }
   background: var(--creme); border-radius: 24px; padding: 24px 24px 22px;
   display: grid; gap: 14px; align-content: start;
 }
+.depoimento { border: 1px solid var(--linha); }
 .depoimento blockquote { margin: 0; font-size: 1rem; line-height: 1.55; }
-.depoimento figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .9375rem; color: var(--tinta-suave); }
-.depoimento .estrelas svg { width: 13px; height: 13px; }
+.depoimento figcaption { display: grid; gap: 0; font-size: .875rem; color: var(--tinta-suave); border-top: 1px solid var(--linha); padding-top: 12px; }
+.depoimento figcaption strong { color: var(--tinta); font-size: 1rem; font-weight: 600; }
+.depoimento .estrelas svg { width: 16px; height: 16px; }
 @media (prefers-reduced-motion: no-preference) {
-  .js .depoimentos-trilho { animation: letreiro 60s linear infinite; }
+  .js .depoimentos-trilho { animation: letreiro 70s linear infinite; }
   .depoimentos:hover .depoimentos-trilho, .depoimentos:focus-within .depoimentos-trilho { animation-play-state: paused; }
 }
-@media (prefers-reduced-motion: reduce) { .depoimentos { overflow-x: auto; } }
+@media (prefers-reduced-motion: reduce) { .depoimentos { overflow-x: auto; } .depoimentos-trilho > div[aria-hidden] { display: none !important; } }
 
 /* ============ Sobre ============ */
 .sobre h2 { max-width: 15em; font-size: clamp(2.3rem, 1.4rem + 3.6vw, 4.4rem); }
@@ -441,6 +487,13 @@ a:hover { color: var(--azul-profundo-escuro); }
 .contato-item dt { font-size: .9375rem; color: var(--tinta-suave); }
 .contato-item dd { margin: 0; font-size: 1.125rem; }
 .contato-item dd a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -8px; }
+.contato-item-link { display: block; padding: 0; }
+.contato-link { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; padding: 16px 0; color: var(--tinta); text-decoration: none; }
+.contato-link .icone { grid-row: span 2; margin-top: 3px; color: var(--azul); width: 22px; height: 22px; transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
+.contato-rotulo { font-size: .9375rem; color: var(--tinta-suave); }
+.contato-valor { font-size: 1.125rem; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; color: var(--azul-profundo); }
+.contato-link:hover .contato-valor { text-decoration-thickness: 2px; }
+.contato-link:hover .icone { transform: scale(1.15) rotate(-8deg); }
 .mapa-bloco {
   position: relative; overflow: hidden;
   background: var(--creme); border-radius: var(--raio);
@@ -462,7 +515,10 @@ a:hover { color: var(--azul-profundo-escuro); }
 .rodape-grade { display: grid; gap: 28px; }
 .rodape .marca-recorte { width: 220px; }
 .rodape-col { display: grid; gap: 4px; align-content: start; }
-.rodape-col a { display: block; padding-block: 11px; justify-self: start; }
+.rodape-col a { display: flex; align-items: center; gap: 8px; min-height: 44px; justify-self: start; }
+.rodape-col a .icone { color: var(--azul); }
+.rodape-col a:hover { color: var(--azul-profundo-escuro); text-decoration-thickness: 2px; }
+.rodape-base a { display: inline-flex; align-items: center; min-height: 44px; }
 .rodape-base { display: grid; gap: 6px; margin-top: 40px; padding-top: 20px; padding-bottom: 8px; border-top: 1px solid var(--linha); font-size: .9375rem; color: var(--tinta-suave); }
 .marca-fundo {
   font: 300 clamp(6.5rem, 30vw, 21rem)/0.78 var(--fonte-titulo);
@@ -512,16 +568,18 @@ a:hover { color: var(--azul-profundo-escuro); }
   position: fixed; z-index: 40;
   right: max(16px, env(safe-area-inset-right));
   bottom: calc(16px + env(safe-area-inset-bottom));
-  width: 48px; height: 48px; border-radius: 50%;
+  width: 52px; height: 52px; border-radius: 50%;
   display: grid; place-items: center;
-  background: var(--azul-profundo); color: var(--creme);
-  box-shadow: 0 2px 10px rgba(30, 59, 69, 0.18);
-  opacity: 0; visibility: hidden;
-  transition: opacity .2s ease, visibility .2s ease, background-color .15s ease;
+  background: var(--whats); color: var(--whats-tinta);
+  box-shadow: 0 4px 14px rgba(11, 42, 28, 0.28);
+  transition: transform .2s cubic-bezier(.2, .7, .2, 1), background-color .2s ease;
 }
-.flutuante.visivel { opacity: 1; visibility: visible; }
-.flutuante:hover { background: var(--azul-profundo-escuro); color: var(--creme); }
-.flutuante svg { width: 24px; height: 24px; }
+.flutuante::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--whats); opacity: 0; pointer-events: none; }
+.flutuante:hover { background: var(--whats-escuro); color: var(--whats-tinta); transform: scale(1.08); }
+.flutuante:active { transform: scale(.94); }
+.flutuante svg { width: 26px; height: 26px; }
+@media (prefers-reduced-motion: no-preference) { .flutuante::before { animation: pulso 3.6s ease-out 2s infinite; } }
+@keyframes pulso { 0% { transform: scale(1); opacity: .65; } 60%, 100% { transform: scale(1.7); opacity: 0; } }
 </style>
 </head>
 <body>
@@ -558,7 +616,8 @@ a:hover { color: var(--azul-profundo-escuro); }
       <a href="#sobre">Sobre</a>
       <a href="#contato">Contato</a>
     </nav>
-    <a class="botao botao-principal botao-topo" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener" aria-label="Agendar pelo WhatsApp">
+    <a class="link-icone" data-insta data-link="instagram" href="https://instagram.com/arieira_odontologia_" target="_blank" rel="noopener" aria-label="Instagram da Arieira Odontologia"><svg class="icone" aria-hidden="true"><use href="#i-instagram"/></svg></a>
+    <a class="botao botao-whats botao-topo" data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener" aria-label="Agendar pelo WhatsApp">
       <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>
       <span class="texto-longo">Agendar pelo WhatsApp</span><span class="texto-curto" aria-hidden="true">Agendar</span>
     </a>
@@ -599,7 +658,7 @@ a:hover { color: var(--azul-profundo-escuro); }
         <div class="hero-lado">
           <p class="hero-sub">A <span data-c="responsavel.nome">Dra. Paula Arieira</span> atende adultos e crianças em um só lugar, com todos os tratamentos odontológicos.</p>
           <div class="hero-acoes">
-            <a class="botao botao-principal" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
+            <a class="botao botao-whats" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
               <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Agendar pelo WhatsApp
             </a>
             <a class="botao botao-secundario" href="#tratamentos">Ver tratamentos</a>
@@ -662,7 +721,7 @@ a:hover { color: var(--azul-profundo-escuro); }
       <div class="protese-intro">
         <h2 id="titulo-protese">Do implante à coroa</h2>
         <p>Fazemos implantes e próteses fixas e removíveis. Na avaliação, a <span data-c="responsavel.curto">Dra. Paula</span> indica o caminho certo para cada caso.</p>
-        <a class="botao botao-secundario" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">Agendar uma avaliação</a>
+        <a class="botao botao-whats" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">Agendar uma avaliação</a>
       </div>
       <div class="protese-trilho">
         <div class="protese-fixo">
@@ -736,7 +795,7 @@ a:hover { color: var(--azul-profundo-escuro); }
       </svg>
       <div class="sobre-texto">
         <p>Na <span data-c="clinica.nome">Arieira Odontologia Especializada</span>, a <span data-c="responsavel.curto">Dra. Paula</span> atende adultos e crianças, com todos os tratamentos odontológicos no mesmo consultório. Cada tratamento começa por uma avaliação, em que ela explica as opções para o seu caso com calma e clareza.</p>
-        <a class="botao botao-principal" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
+        <a class="botao botao-whats" data-abrir-form data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">
           <svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Agendar uma avaliação
         </a>
       </div>
@@ -764,10 +823,12 @@ a:hover { color: var(--azul-profundo-escuro); }
             <dt>WhatsApp</dt>
             <dd><a data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener" data-c="whatsapp.texto">(22) 99247-4474</a></dd>
           </div>
-          <div class="contato-item">
-            <svg class="icone" aria-hidden="true"><use href="#i-instagram"/></svg>
-            <dt>Instagram</dt>
-            <dd><a data-link="instagram" href="https://instagram.com/arieira_odontologia_" target="_blank" rel="noopener" data-c="instagram.usuario">@arieira_odontologia_</a></dd>
+          <div class="contato-item contato-item-link">
+            <a class="contato-link" data-insta data-link="instagram" href="https://instagram.com/arieira_odontologia_" target="_blank" rel="noopener" aria-label="Instagram da Arieira Odontologia">
+              <svg class="icone" aria-hidden="true"><use href="#i-instagram"/></svg>
+              <span class="contato-rotulo">Instagram</span>
+              <span class="contato-valor" data-c="instagram.usuario">@arieira_odontologia_</span>
+            </a>
           </div>
           <div class="contato-item" data-se="horario" hidden>
             <svg class="icone" aria-hidden="true"><use href="#i-relogio"/></svg>
@@ -802,11 +863,12 @@ a:hover { color: var(--azul-profundo-escuro); }
     <div class="rodape-col">
       <a data-link="telefone" href="tel:+552220409551">Telefone <span data-c="telefone.texto">(22) 2040-9551</span></a>
       <a data-link="whatsapp" href="https://wa.me/5522992474474?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20avalia%C3%A7%C3%A3o." target="_blank" rel="noopener">WhatsApp <span data-c="whatsapp.texto">(22) 99247-4474</span></a>
-      <a data-link="instagram" href="https://instagram.com/arieira_odontologia_" target="_blank" rel="noopener">Instagram <span data-c="instagram.usuario">@arieira_odontologia_</span></a>
+      <a class="rodape-insta" data-insta data-link="instagram" href="https://instagram.com/arieira_odontologia_" target="_blank" rel="noopener" aria-label="Instagram da Arieira Odontologia"><svg class="icone" aria-hidden="true"><use href="#i-instagram"/></svg><span data-c="instagram.usuario">@arieira_odontologia_</span></a>
     </div>
   </div>
   <div class="wrap rodape-base">
     <p>Responsável: <span data-c="responsavel.nome">Dra. Paula Arieira</span>, <span data-c="CRO">CRO-RJ 00000</span></p>
+    <p><a href="privacidade.html">Política de privacidade</a></p>
     <p>© <span data-ano>2026</span> <span data-c="clinica.nome">Arieira Odontologia Especializada</span>. Todos os direitos reservados.</p>
   </div>
   <div class="marca-fundo" aria-hidden="true" data-c="clinica.nomeCurto">Arieira</div>
@@ -830,9 +892,9 @@ a:hover { color: var(--azul-profundo-escuro); }
         <label><input type="radio" name="periodo" value="Tanto faz"><span>Tanto faz</span></label>
       </div>
     </fieldset>
-    <label class="aceite"><input type="checkbox" name="aceite" required><span>Aceito ser contatado pela clínica sobre o agendamento.</span></label>
+    <label class="aceite"><input type="checkbox" name="aceite" required><span>Aceito ser contatado pela clínica sobre o agendamento. Veja a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</span></label>
     <p class="form-erro" id="form-erro" role="alert" hidden></p>
-    <button class="botao botao-principal form-enviar" type="submit"><svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Continuar no WhatsApp</button>
+    <button class="botao botao-whats form-enviar" type="submit"><svg class="icone" aria-hidden="true"><use href="#i-whatsapp"/></svg>Continuar no WhatsApp</button>
   </form>
 </dialog>
 
@@ -927,7 +989,7 @@ a:hover { color: var(--azul-profundo-escuro); }
   /* ---------- Avaliações em loop (só com avaliações reais no CONFIG) ---------- */
   if (CONFIG.avaliacoes && CONFIG.avaliacoes.length) {
     const estrelas = '<span class="estrelas" aria-label="5 estrelas" role="img">' + '<svg aria-hidden="true"><use href="#i-estrela"/></svg>'.repeat(5) + '</span>';
-    const cartoes = CONFIG.avaliacoes.map((a) => '<figure class="depoimento"><blockquote>' + esc(a.texto) + '</blockquote><figcaption><span>' + esc(a.nome) + '</span>' + estrelas + '</figcaption></figure>').join('');
+    const cartoes = CONFIG.avaliacoes.map((a) => '<figure class="depoimento">' + estrelas + '<blockquote>' + esc(a.texto) + '</blockquote><figcaption><strong>' + esc(a.nome) + '</strong><span>Avaliação no Google</span></figcaption></figure>').join('');
     const trilhoDep = $('#depoimentos-trilho');
     trilhoDep.innerHTML = cartoes + '<div style="display:contents" aria-hidden="true">' + cartoes + '</div>';
     $('#depoimentos').hidden = false;
@@ -953,12 +1015,11 @@ a:hover { color: var(--azul-profundo-escuro); }
   }
   contador = 0;
   $$('[data-palavras]').forEach((el) => dividir(el, false));
+  $('.hero-titulo').classList.add('revela');
   const titulos = $$('main h2');
   titulos.forEach((h) => { h.classList.add('revela'); dividir(h, true); });
-  const obsTitulos = new IntersectionObserver((entradas) => {
-    entradas.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('visivel'); obsTitulos.unobserve(e.target); } });
-  }, { rootMargin: '0px 0px -12% 0px' });
-  titulos.forEach((h) => obsTitulos.observe(h));
+
+
 
   /* ---------- Resultados (carrossel no celular) ---------- */
   const casos = $('#casos');
@@ -1145,14 +1206,60 @@ a:hover { color: var(--azul-profundo-escuro); }
   reduzirMovimento.addEventListener('change', configurarProtese);
   configurarProtese();
 
-  /* ---------- Botão flutuante: some onde já há contatos ou na prótese ---------- */
-  const flutuante = $('.flutuante');
-  const visiveis = new Set();
-  const observador = new IntersectionObserver((entradas) => {
-    entradas.forEach((e) => (e.isIntersecting ? visiveis.add(e.target) : visiveis.delete(e.target)));
-    flutuante.classList.toggle('visivel', visiveis.size === 0);
-  });
-  ['#inicio', '.protese-trilho', '#contato', '#rodape'].forEach((s) => { const el = $(s); if (el) observador.observe(el); });
+  /* ---------- Entrada ao rolar: acontece toda vez que a seção volta para a tela ---------- */
+  const ALVOS = [
+    ['.hero-lado', 'rv', 3], ['.arte-quadro', 'rv-zoom', 0], ['.hero-numeros', 'rv', 5], ['.letreiro', 'rv', 0],
+    ['.faixa-colunas > div', 'rv', 1], ['.divisor', 'rv', 0],
+    ['.cabeca-secao > p', 'rv', 2], ['.lista-tratamentos li', 'rv', 1],
+    ['.protese-intro p', 'rv', 2], ['.protese-intro .botao', 'rv', 3],
+    ['.caso', 'rv', 1], ['.pontos', 'rv', 2], ['.nota-resultados', 'rv', 2],
+    ['.avaliacoes-grade > div', 'rv', 2], ['.depoimentos', 'rv-zoom', 2],
+    ['.sobre-curva', 'rv', 1], ['.sobre-texto > *', 'rv', 2],
+    ['.contatos .contato-item', 'rv-esq', 1], ['.mapa-bloco', 'rv-dir', 2],
+    ['.rodape-grade > div', 'rv', 1], ['.rodape-base', 'rv', 0], ['.marca-fundo', 'rv', 0],
+  ];
+  const observados = new Set($$('.revela'));
+  ALVOS.forEach(([sel, classe, passo]) => $$(sel).forEach((el, i) => {
+    el.classList.add(classe);
+    if (passo) el.style.setProperty('--d', String(i % passo));
+    observados.add(el);
+  }));
+  $$('.caso').forEach((el, i) => el.style.setProperty('--d', String(i)));
+
+  // Contagem dos números: roda de novo toda vez que aparecem
+  const contadores = $$('.hero-numeros strong, .nota-grande');
+  contadores.forEach((el) => { el.dataset.final = el.textContent.trim(); });
+  const animacoes = new WeakMap();
+  function contar(el) {
+    const final = el.dataset.final; const decimais = final.includes(',') ? final.split(',')[1].length : 0;
+    const alvo = parseFloat(final.replace(/\./g, '').replace(',', '.'));
+    if (!isFinite(alvo) || reduzirMovimento.matches) { el.textContent = final; return; }
+    cancelAnimationFrame(animacoes.get(el)); const t0 = performance.now(), dur = 1300;
+    const passo = (t) => {
+      const p = Math.min(1, (t - t0) / dur), v = alvo * (1 - Math.pow(1 - p, 3));
+      el.textContent = v.toLocaleString('pt-BR', { minimumFractionDigits: decimais, maximumFractionDigits: decimais });
+      if (p < 1) animacoes.set(el, requestAnimationFrame(passo)); else el.textContent = final;
+    };
+    animacoes.set(el, requestAnimationFrame(passo));
+  }
+
+  function aoCruzar(entradas) {
+    entradas.forEach((e) => {
+      const alto = e.intersectionRect.height >= innerHeight * 0.25;   // elementos muito altos também entram
+      const entra = e.isIntersecting && (e.intersectionRatio >= 0.15 || alto);
+      const alvo = e.target;
+      if (entra && !alvo.classList.contains('visivel')) { alvo.classList.add('visivel'); if (alvo.dataset.final) contar(alvo); }
+      else if (!e.isIntersecting && alvo.classList.contains('visivel')) alvo.classList.remove('visivel');
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    const obsEntrada = new IntersectionObserver(aoCruzar, { threshold: [0, 0.15, 0.4], rootMargin: '0px 0px -6% 0px' });
+    observados.forEach((el) => obsEntrada.observe(el));
+    contadores.forEach((el) => obsEntrada.observe(el));
+  } else { observados.forEach((el) => el.classList.add('visivel')); }
+
+  /* ---------- Instagram: rótulo de acessibilidade vem da configuração ---------- */
+  $$('[data-insta]').forEach((a) => a.setAttribute('aria-label', CONFIG.instagram.rotulo || 'Instagram'));
 })();
 </script>
 </body>

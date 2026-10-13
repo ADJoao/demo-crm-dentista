@@ -25,9 +25,14 @@ Tudo o que muda de uma clínica para outra fica em **`config.js`** (usado pelo s
 
 As imagens ficam em `img/`: `logo.png`, `lentes.jpg`, `clareamento.jpg`, `protese.jpg` e as camadas 3D `3d-*.webp`.
 
+## Privacidade (LGPD)
+- O site não usa cookies de rastreamento nem ferramentas de análise, e as fontes ficam na pasta `fonts/` (nada é carregado do Google). Por isso não há aviso de cookies. Se o cliente passar a usar Google Analytics, Pixel da Meta ou similares, será preciso um aviso de cookies com consentimento.
+- A página `privacidade.html` é um modelo em linguagem simples, ligada no rodapé e no formulário. Peça a um advogado para revisar antes de publicar de verdade.
+- As avaliações aparecem com primeiro nome e inicial. Confirme com a clínica se pode usar depoimentos de pacientes (regras de publicidade do CFO).
+
 ## Antes de publicar de verdade
 - A página está com `noindex, nofollow` (modo demonstração). Ao aprovar, apague a linha `<meta name="robots">` no `<head>`.
-- Preencha `CIDADE`, `HORARIO` e `CRO`.
+- Preencha `CIDADE` e `HORARIO` (o `CRO` já está preenchido).
 - Confirme que a clínica tem autorização por escrito dos pacientes das fotos de antes e depois (exigência do CFO).
 
 ## Camadas 3D da prótese

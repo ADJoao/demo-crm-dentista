@@ -7,7 +7,7 @@
 // página, e o rodapé mostra "CRO-RJ 00000".
 const CIDADE = '';   // exemplo de formato: 'Nome da cidade, UF'
 const HORARIO = '';  // exemplo de formato: 'Segunda a sexta, das 8h às 18h'
-const CRO = '';      // exemplo de formato: 'CRO-RJ 12345'
+const CRO = 'CRO-RJ 44553';      // exemplo de formato: 'CRO-RJ 12345'
 
 const CONFIG = {
   clinica: {
@@ -24,7 +24,7 @@ const CONFIG = {
     mensagem: 'Olá! Vim pelo site e gostaria de agendar uma avaliação.',
     internacional: '+55-22-99247-4474',
   },
-  instagram: { usuario: '@arieira_odontologia_', link: 'https://instagram.com/arieira_odontologia_' },
+  instagram: { usuario: '@arieira_odontologia_', link: 'https://instagram.com/arieira_odontologia_', rotulo: 'Instagram da Arieira Odontologia' },
   // link vazio: abre a busca da clínica no Google Maps, onde aparecem as avaliações
   google: { nota: '5,0', total: 24, link: '' },
   cores: {
@@ -51,9 +51,16 @@ const CONFIG = {
     { nome: 'Cirurgia de siso', texto: 'Avaliação e remoção dos dentes do siso, quando indicada.' },
     { nome: 'Próteses fixas e removíveis', texto: 'Coroas, pontes e dentaduras para repor dentes perdidos ou muito desgastados.' },
   ],
-  // Avaliações reais copiadas do Google (texto e primeiro nome). Vazio: a faixa de avaliações não aparece.
+  // Avaliações reais copiadas do Google (texto e primeiro nome com inicial, por privacidade). Vazio: a faixa de avaliações não aparece.
   // Formato: { nome: 'Maria S.', texto: '...' }
-  avaliacoes: [],
+  avaliacoes: [
+    { nome: 'Mariana S.', texto: 'Tive uma experiência maravilhosa com toda a equipe da clínica! Desde o primeiro atendimento, fui acolhida com muito carinho e atenção. A dentista Paula foi extremamente cuidadosa e a moça que me auxiliava ficou o tempo inteiro segurando a minha mão. Um gesto simples, mas que fez toda a diferença para mim.' },
+    { nome: 'Thelma S.', texto: 'Ótimo profissionais, com experiência de alto nível, fui muito bem atendida e superou minha expectativa. Obrigado Dra Paula e Maria Clara.' },
+    { nome: 'Nete C.', texto: 'Fui muito bem atendida e o tratamento que fiz excelente! Recomendo a clínica Arieira Odontologia, profissionais de qualidade e de responsabilidade, onde podemos encontrar segurança e o melhor atendimento!' },
+    { nome: 'Igor C.', texto: 'Excelente atendimento da Thelma, lugar aconchegante, experiência maravilhosa, recomendo.' },
+    { nome: 'Charla P.', texto: 'Melhor atendimento, a secretária está de parabéns, ótimos profissionais.' },
+    { nome: 'Central Financeira CF', texto: 'Excelente atendimento, melhores profissionais, fiz minhas lentes em resina!' },
+  ],
   // Cada foto já traz "Antes" em cima e "Depois" embaixo. Use as fotos inteiras.
   resultados: [
     { titulo: 'Lentes', legenda: 'Lentes de contato dental para ajustar a cor e o formato dos dentes.', imagem: 'img/lentes.jpg', alt: 'Antes e depois de lentes de contato dental: sorriso antes, em cima, e depois, embaixo.' },
